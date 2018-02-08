@@ -7,6 +7,7 @@ import edu.columbia.main.Utils;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,22 +35,21 @@ public class tagBBN {
 	String patternString = "<doc id=\".*\">";
 	Pattern pattern = Pattern.compile(patternString);
 
-	LanguageDetector lp = new LanguageDetector();
         log.info("LP LOADED");
         BufferedReader br = new BufferedReader(new FileReader(contentFile));
         String line = "", docId = "";
-	ArrayList<String> lines;
+	ArrayList<String> lines = new ArrayList<String>();
 
 	while ((line = br.readLine()) != null) {
 	    Matcher matcher = pattern.matcher(line);
-	    if (matcher.matches()) {
-		docId = matcher.find();
-		lines = new ArrayList<String>();
+	    if (matcher.find()) {
+		docId = matcher.group(1);
 	    }
 	    else if (line.equals("</doc>")) {
 		String outputBlock = outputTagging(langCode, docId, lines);
 	        bw.write(outputBlock); 
 		docId = "";
+		lines = new ArrayList<String>();
 	    }
 	    else {
 		lines.add(line);
@@ -62,6 +62,7 @@ public class tagBBN {
     public static String outputTagging(String langCode, String docId, ArrayList<String> lines) {
 	String output = "";
 	String docString = "";
+	LanguageDetector lp = new LanguageDetector();
 	for (String line: lines) {
        		String untagged_text = line.replaceAll("<s>", "").replaceAll("</s.*>", "");
 		String clean_text = untagged_text.replaceAll("<NUM.*>", "");
