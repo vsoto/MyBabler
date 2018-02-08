@@ -32,7 +32,7 @@ public class tagBBN {
     	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newLangFile), StandardCharsets.UTF_8));
         File contentFile = new File(path);
         
-	String patternString = "<doc id=\".*\">";
+	String patternString = "<doc id=\"(.*)\">";
 	Pattern pattern = Pattern.compile(patternString);
 
         log.info("LP LOADED");
