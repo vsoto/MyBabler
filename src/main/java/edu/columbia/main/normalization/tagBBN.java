@@ -7,7 +7,10 @@ import edu.columbia.main.Utils;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
+import edu.columbia.main.configuration.BabelConfig;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +19,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
@@ -25,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 public class tagBBN {
 
     static Logger log = Logger.getLogger(tagBBN.class);
+    static LanguageDetector lp = new LanguageDetector();
 
     public static void start(String path, String saveTo, String langCode) throws Exception {
 
@@ -40,13 +46,16 @@ public class tagBBN {
         String line = "", docId = "";
 	ArrayList<String> lines = new ArrayList<String>();
 
+	HashSet<String> langAnchors = loadAnchors(langCode);
+	HashSet<String> engAnchors = loadAnchors("eng");
+
 	while ((line = br.readLine()) != null) {
 	    Matcher matcher = pattern.matcher(line);
 	    if (matcher.find()) {
 		docId = matcher.group(1);
 	    }
 	    else if (line.equals("</doc>")) {
-		String outputBlock = outputTagging(langCode, docId, lines);
+		String outputBlock = outputTagging(langCode, docId, lines, langAnchors, engAnchors);
 	        bw.write(outputBlock); 
 		docId = "";
 		lines = new ArrayList<String>();
@@ -59,23 +68,51 @@ public class tagBBN {
 	bw.close();
     }
 
-    public static String outputTagging(String langCode, String docId, ArrayList<String> lines) {
+    public static HashSet<String> loadAnchors(String langCode) throws Exception {
+	HashSet<String> anchors = new HashSet<String>();
+	String anchorsFilename = "anchors/" + langCode + "_anchors.txt";	
+	InputStream is =  tagBBN.class.getClassLoader().getResourceAsStream(anchorsFilename);
+	BufferedReader br = new BufferedReader(new InputStreamReader(is));
+	String line = "";
+	while ((line = br.readLine()) != null) {
+		anchors.add(line);
+	}
+	return anchors;
+    }
+
+    public static String outputTagging(String langCode, String docId, ArrayList<String> lines, HashSet<String> langAnchors, HashSet<String> engAnchors) {
 	String output = "";
 	String docString = "";
-	LanguageDetector lp = new LanguageDetector();
 	for (String line: lines) {
        		String untagged_text = line.replaceAll("<s>", "").replaceAll("</s.*>", "");
 		String clean_text = untagged_text.replaceAll("<NUM.*>", "");
 		Result res = lp.detectLanguage(clean_text, langCode);
-		output += "<s>" + untagged_text + "</s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
+		output += "<s> " + processLine(untagged_text, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
 		
 		docString += clean_text + "\n";
 	}
 	Result res = lp.detectLanguage(docString, langCode);
 	String header = "<doc " + (makeAttribute("id", docId) + makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence))) + " >\n";
-	String tail = "</doc>";
+	String tail = "</doc>\n";
 	return header + output + tail;
     }
+
+    public static String processLine(String line, String langCode, HashSet<String> langAnchors, HashSet<String> engAnchors) {
+	String[] tokens = line.split(" ");
+	String newLine = "";
+	for (String token: tokens) {
+		if (langAnchors.contains(token)) {
+			newLine += "<" + token + ":" + langCode + "> ";
+		} else if (engAnchors.contains(token)) {
+			newLine += "<" + token + ":eng> ";
+		}
+		else {
+			newLine += token + " ";
+		}
+	}
+	return newLine;
+    }
+
 
     public static int countWords(String s){
 
