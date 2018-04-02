@@ -56,6 +56,7 @@ public class BabelConfig {
 		for(String name: props.stringPropertyNames()){
 			System.out.println(name +"\t" + props.getProperty(name) + "\n");
 		}
+                System.out.println("Entering Factory");
                 cfg = ConfigFactory.create(ConfigFromFile.class, props);
             } catch (IOException e) {
                 cfg = ConfigFactory.create(ConfigFromFile.class);
@@ -72,6 +73,7 @@ public class BabelConfig {
      */
     public static void InstantiateWithConfigFile(String pathToFile) {
         instance = new BabelConfig(pathToFile);
+        System.out.println("Just created instance");
     }
 
     /**
