@@ -189,6 +189,8 @@ public class BabelConfig {
     }
 
     public void setCollectionRankedNGramFile(String langCode) {
+        System.out.println("Calling setCollectionRankedNGramFile!");
+
         if (langCode != null && !langCode.isEmpty()) {
             collectionRankedNGramFile = new String[1];
             collectionRankedNGramFile[0] = langCode;
@@ -220,6 +222,7 @@ public class BabelConfig {
     }
 
    public void setRankedNGramFiles(String[] files) {
+        System.out.println("Calling setRankedNGramFiles!");
 	this.collectionRankedNGramFile = files;
    }
 }
