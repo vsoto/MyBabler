@@ -181,6 +181,7 @@ public class BabelConfig {
    }
 
     public void setCollectionLanguage(String langCode) {
+        System.out.println("Calling setCollectionLanguage!");
         if (langCode != null && !langCode.isEmpty()) {
             collectionLanguage = new String[1];
             collectionLanguage[0] = langCode;
@@ -214,6 +215,7 @@ public class BabelConfig {
     }
 
     public void setLanguages(String[] languages) {
+        System.out.println("Calling setLanguages!");
         this.collectionLanguage = languages;
     }
 
