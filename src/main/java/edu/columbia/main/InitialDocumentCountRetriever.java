@@ -116,6 +116,9 @@ public class InitialDocumentCountRetriever {
 				entries.add(word);
 				num_ngrams++;
 			}
+                        for(String word: entries){
+                            System.out.println(word);
+                        }
 
 		} catch(IOException e) {
 			e.printStackTrace();
