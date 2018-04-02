@@ -137,7 +137,18 @@ public enum LanguageDataManager {
 
     public static String[] getRankedNGramFiles() {
     	return BabelConfig.getInstance().getListOfRankedNGramFiles();
+        //BabelConfig.getInstance().getConfigFromFile().rankedNGramFile()
+    }
+    
+    public static String getLanguage() {
+        System.out.println("Language is " + BabelConfig.getInstance().getConfigFromFile().lang());
+        return BabelConfig.getInstance().getConfigFromFile().lang();
     }
 
+    public static String getRankedNGramFile() {
+        System.out.println("NGram file is " + BabelConfig.getInstance().getConfigFromFile().rankedNGramFile());
+        return BabelConfig.getInstance().getConfigFromFile().rankedNGramFile();
+    }
+    
 
 }
