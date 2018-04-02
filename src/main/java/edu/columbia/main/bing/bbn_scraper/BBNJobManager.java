@@ -43,8 +43,10 @@ public class BBNJobManager extends BabelScraper {
         BBNBroker broker = new BBNBroker();
         LanguageDetector lp = new LanguageDetector();
         HttpClient httpClient = new MTHttpClient().getClient();
-        String[] langs = LanguageDataManager.getLanguages();
-	String[] ranked_ngrams_files = LanguageDataManager.getRankedNGramFiles();
+        String lang = LanguageDataManager.getLanguage();
+        String[] langs = new String[]{lang};
+	String ranked_ngrams_file = LanguageDataManager.getRankedNGramFile();
+        String[] ranked_ngrams_files = new String[]{ranked_ngrams_file};
         ViewManager viewManager = new ViewManager(langs);
 
 
