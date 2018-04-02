@@ -125,6 +125,7 @@ public class BabelMain {
         if(pathConfig!=null)
         {
             BabelConfig.InstantiateWithConfigFile(pathConfig);
+            System.out.println("BYE");
         }
 
         if(langs != null){
