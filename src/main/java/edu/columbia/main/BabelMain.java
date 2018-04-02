@@ -70,7 +70,7 @@ public class BabelMain {
     @Option(name = "-lgs", aliases = "--langs", handler = StringArrayOptionHandler.class, required = false)
     private String[] langs;
 
-    @Option(name="-m", aliases = "--module", required=false, usage="Chooses the collection module out of 'ted' 'bs' 'wiki' 'twitter', 'twitterUsers', 'bb, 'diffbot','youtube'")
+    @Option(name="-m", aliases = "--module", required=false, usage="Chooses the collection module out of 'ted' 'bs' 'wiki' 'twitter', 'twitterUsers', 'bb, 'bbn', 'diffbot','youtube'")
     private static String module = BabelConfig.getInstance().getConfigFromFile().module();
 
     @Option(name="-ex", aliases = "--export", usage="Path to Export a single text file with all the data in the DB")
@@ -88,11 +88,8 @@ public class BabelMain {
     @Option(name="-ng", aliases = "--ngram", usage="Sets choice of which ngram model to run (1-unigram, 2-bigram, 3-trigram")
     private static int ngram = BabelConfig.getInstance().getConfigFromFile().ngram();
    
-	@Option(name="-ibbn", aliases = "--init_bbn", usage="Computes initial ranking of n-grams for BING querying, BBN style") 
-	private static Boolean initBBNScraping = false;
-
-	@Option(name="-rbbn", aliases = "--run_bbn", usage="Scrapes websites using BING engine and initial ranking of n-grams, BBN style")
-    private static Boolean runBBNScraping = false;
+    @Option(name="-ibbn", aliases = "--init_bbn", usage="Computes initial ranking of n-grams for BING querying, BBN style") 
+    private static Boolean initBBNScraping = false;
 
 
     @Option(name="-tb", aliases = "--tagBBN", usage="Tags bbn data for language")
@@ -127,7 +124,7 @@ public class BabelMain {
          */
         if(pathConfig!=null)
         {
-            BabelConfig.InsteantiateWithConfigFile(pathConfig);
+            BabelConfig.InstantiateWithConfigFile(pathConfig);
         }
 
         if(langs != null){
@@ -152,16 +149,17 @@ public class BabelMain {
             BabelConfig.getInstance().setPathToWordsList(wordList);
         }
 
-		if (initBBNScraping == true) {
-			new InitialDocumentCountRetriever().start(args[1], args[2]);
-		}
-		else if (runBBNScraping == true) {
-			new BBNJobManager().run(args[1], args[2], args[3]);
-		}
+	if (initBBNScraping == true) {
+		new InitialDocumentCountRetriever().start(args[1], args[2]);
+	}
+	else if (module.equals("bbn")) {
+		System.out.println("Starting BBN-style scraper");
+		new BBNJobManager().run();
+	}
         else if (tagBBNData == true){
-	    	System.out.println(args[1]);
-	    	System.out.println(args[2]);
-	    	System.out.println(args[3]);
+	    System.out.println(args[1]);
+	    System.out.println(args[2]);
+	    System.out.println(args[3]);
             new tagBBN().start(args[1],args[2],args[3]);
         }
 

@@ -20,6 +20,7 @@ public class BabelConfig {
     private static volatile BabelConfig instance = null;
     private ConfigFromFile cfg;
     private String[] collectionLanguage;
+    private String[] collectionRankedNGramFile;
     private String pathToWordsList;
     private String pathToDataFolder;
 
@@ -49,10 +50,12 @@ public class BabelConfig {
             cfg = ConfigFactory.create(ConfigFromFile.class);
         } else {
             //get config.properties file from path
-
             try {
                 Properties props = new Properties();
                 props.load(new FileInputStream(new File(pathToConfig)));
+		for(String name: props.stringPropertyNames()){
+			System.out.println(name +"\t" + props.getProperty(name) + "\n");
+		}
                 cfg = ConfigFactory.create(ConfigFromFile.class, props);
             } catch (IOException e) {
                 cfg = ConfigFactory.create(ConfigFromFile.class);
@@ -67,7 +70,7 @@ public class BabelConfig {
      *
      * @param pathToFile path to config file
      */
-    public static void InsteantiateWithConfigFile(String pathToFile) {
+    public static void InstantiateWithConfigFile(String pathToFile) {
         instance = new BabelConfig(pathToFile);
     }
 
@@ -76,7 +79,7 @@ public class BabelConfig {
      *
      * @param f file descriptor for config file
      */
-    public static void InsteantiateWithConfigFile(File f) {
+    public static void InstantiateWithConfigFile(File f) {
         instance = new BabelConfig(f);
     }
 
@@ -173,10 +176,21 @@ public class BabelConfig {
         return collectionLanguage;
     }
 
+   public String[] getListOfRankedNGramFiles() {
+   	return collectionRankedNGramFile;
+   }
+
     public void setCollectionLanguage(String langCode) {
         if (langCode != null && !langCode.isEmpty()) {
             collectionLanguage = new String[1];
             collectionLanguage[0] = langCode;
+        }
+    }
+
+    public void setCollectionRankedNGramFile(String langCode) {
+        if (langCode != null && !langCode.isEmpty()) {
+            collectionRankedNGramFile = new String[1];
+            collectionRankedNGramFile[0] = langCode;
         }
     }
 
@@ -202,4 +216,8 @@ public class BabelConfig {
     public void setLanguages(String[] languages) {
         this.collectionLanguage = languages;
     }
+
+   public void setRankedNGramFiles(String[] files) {
+	this.collectionRankedNGramFile = files;
+   }
 }

@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Set;
 
 /**
@@ -96,6 +98,30 @@ public class InitialDocumentCountRetriever {
         } catch (IOException e) {
             e.printStackTrace();
         }
+	}
+
+	public static ArrayList<String> getHighestRankedNGrams(String pathRankingFile, int max_entries) {
+		ArrayList<String> entries = new ArrayList<String>();
+		try {
+			File file = new File(pathRankingFile);
+			FileReader fileReader = new FileReader(file);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			
+			String line;
+			int num_ngrams = 0;
+			while (((line = bufferedReader.readLine()) != null) && (num_ngrams < max_entries)) {
+				String[] tokens = line.split("\t");
+				String word = tokens[0];
+				double score = Double.parseDouble(tokens[1]);
+				entries.add(word);
+				num_ngrams++;
+			}
+
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		return entries;
+			
 	}
 
 	private static HashSet<String> getDocumentNGrams(String filepath, Integer max_ngram) {

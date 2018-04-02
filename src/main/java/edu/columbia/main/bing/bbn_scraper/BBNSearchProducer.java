@@ -1,5 +1,6 @@
 package edu.columbia.main.bing.bbn_scraper;
 
+import edu.columbia.main.InitialDocumentCountRetriever;
 import edu.columbia.main.LanguageDataManager;
 import edu.columbia.main.LogDB;
 import edu.columbia.main.configuration.BabelConfig;
@@ -58,7 +59,7 @@ public class BBNSearchProducer extends BabelProducer {
     public BBNSearchProducer(BabelBroker broker, String language, String ranked_ngrams_filename) {
         this.broker = broker;
         this.lang = language;
-        this.words = LanguageDataManager.getHighestRankedNGrams(this.lang, 50, ranked_ngrams_filename);
+        this.words = InitialDocumentCountRetriever.getHighestRankedNGrams(ranked_ngrams_filename, 50);
         this.logDb =  new LogDB(this.lang);
         numOfRequests = new AtomicInteger();
     }
@@ -116,12 +117,12 @@ public class BBNSearchProducer extends BabelProducer {
     }
 
     @Override
-    protected void searchWordAndSave(String word){
+    protected void searchWordAndSave(String ngram){
 		boolean breakFlag = false;
 		int counter = 0;
 		this.subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
 		// String searchQuery = "site:blogspot.com " + " \""+word+"\"" + " NOT lang:en";
-		String searchQuery = "\""+word+"\"" + " NOT lang:en";
+		String searchQuery = "\""+ngram+"\"" + " NOT lang:en";
 		try {
 			for (int i=0; !breakFlag ; i++) {
 				SearchResults result = this.SearchWeb(searchQuery, "50", String.valueOf(i*50));

@@ -30,7 +30,7 @@ public class TestConfigFromFile {
         //create fake properties file and put in test/resources
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("configFromFile.properties").getFile());
-        BabelConfig.InsteantiateWithConfigFile(file);
+        BabelConfig.InstantiateWithConfigFile(file);
         ConfigFromFile cfg = BabelConfig.getInstance().getConfigFromFile();
         //check the configuration methods does not return null
         assertNotNull(cfg.twitter_consumer());
@@ -53,7 +53,7 @@ public class TestConfigFromFile {
     @Test
     public void testCreateConfigWithoutFile() {
         String p =null;
-        BabelConfig.InsteantiateWithConfigFile(p);
+        BabelConfig.InstantiateWithConfigFile(p);
         ConfigFromFile cfg = BabelConfig.getInstance().getConfigFromFile();
         //check the configuration methods does not return null
         assertNotNull(cfg.twitter_consumer());

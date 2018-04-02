@@ -135,5 +135,9 @@ public enum LanguageDataManager {
         return BabelConfig.getInstance().getListOfLanguages();
     }
 
+    public static String[] getRankedNGramFiles() {
+    	return BabelConfig.getInstance().getListOfRankedNGramFiles();
+    }
+
 
 }

@@ -36,6 +36,8 @@ public interface ConfigFromFile extends Config {
 
     String lang();
 
+    String rankedNGramFile();
+
     String module();
 
     String xml_file();

@@ -44,6 +44,7 @@ public class BBNJobManager extends BabelScraper {
         LanguageDetector lp = new LanguageDetector();
         HttpClient httpClient = new MTHttpClient().getClient();
         String[] langs = LanguageDataManager.getLanguages();
+	String[] ranked_ngrams_files = LanguageDataManager.getRankedNGramFiles();
         ViewManager viewManager = new ViewManager(langs);
 
 
@@ -54,7 +55,7 @@ public class BBNJobManager extends BabelScraper {
 
         //intiate producers
         for(int i = 0 ; i < NUM_OF_PRODUCERS ; i++){
-            Future f = producers.submit(new BBNSearchProducer(broker,langs[i]));
+            Future f = producers.submit(new BBNSearchProducer(broker, langs[i], ranked_ngrams_files[i]));
             producersFutures[i] = f;
         }
 
