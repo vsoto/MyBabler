@@ -49,6 +49,7 @@ public class BBNJob extends BabelJob {
      * @param URL A url from bing search resutls
      */
     public void setURL(String URL) {
+        System.out.println("Setting " + URL);
         java.net.URL tempUrl = null;
         try {
             tempUrl = new URL(URL);
@@ -57,8 +58,7 @@ public class BBNJob extends BabelJob {
             this.isValid = false;
         }
         this.url = "http://" + tempUrl.getHost(); //  + "/feeds/posts/default";
-		System.out.println(this.url);
-
+        System.out.println(this.url);
         // Ignore blogspot homepage urls
         // if (this.url.equals("http://www.blogspot.com/feeds/posts/default")){
         //    this.isValid = false;
