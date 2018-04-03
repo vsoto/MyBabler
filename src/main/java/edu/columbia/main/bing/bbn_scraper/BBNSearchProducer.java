@@ -57,6 +57,7 @@ public class BBNSearchProducer extends BabelProducer {
         this.broker = broker;
         this.lang = language;
         this.words = InitialDocumentCountRetriever.getHighestRankedNGrams(ranked_ngrams_filename, 2);
+        System.out.println("Using top " + this.words.size() + " ngrams");
         this.logDb = new LogDB(this.lang);
         numOfRequests = new AtomicInteger();
     }
