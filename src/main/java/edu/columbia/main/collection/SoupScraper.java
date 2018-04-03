@@ -25,7 +25,6 @@ import java.util.List;
 /**
  * This class scrapes data from a RSS feed, checks that it is in the desired
  * languageCode and finally saves it Created by Gideon on 9/28/14.
- *
  */
 public class SoupScraper {
 
