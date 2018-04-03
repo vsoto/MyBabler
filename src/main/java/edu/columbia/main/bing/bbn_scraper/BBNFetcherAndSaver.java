@@ -19,12 +19,12 @@ import java.util.AbstractMap;
 /**
  * Fetches a job from the queue and tries to scrape the RSS feed from that results
  */
-public class BBNFetcherAndSaved extends BabelConsumer implements Runnable{
+public class BBNFetcherAndSaver extends BabelConsumer implements Runnable{
 
     HttpClient httpClient;
-    Logger log = Logger.getLogger(BBNFetcherAndSaved.class);
+    Logger log = Logger.getLogger(BBNFetcherAndSaver.class);
     ViewManager viewManager;
-    public BBNFetcherAndSaved(BBNBroker broker, LanguageDetector languageDetector, int i, HttpClient httpClient, ViewManager viewManager) {
+    public BBNFetcherAndSaver(BBNBroker broker, LanguageDetector languageDetector, int i, HttpClient httpClient, ViewManager viewManager) {
         super(broker, languageDetector, i, null);
         this.httpClient = httpClient;
         this.viewManager = viewManager;

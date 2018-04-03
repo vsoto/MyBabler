@@ -63,7 +63,7 @@ public class BBNJobManager extends BabelScraper {
 
         //initiate consumers
         for(int i = 0 ; i < NUM_OF_CONSUMERS; i++){
-            consumers.execute(new BBNFetcherAndSaved(broker, lp,i, httpClient, viewManager));
+            consumers.execute(new BBNFetcherAndSaver(broker, lp,i, httpClient, viewManager));
         }
 
 
