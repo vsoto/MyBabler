@@ -56,7 +56,8 @@ public class SoupScraper {
 
 
         int items = feed.getEntries().size();
-
+        System.out.println("About to scrape " + this.url);
+        
         if(items > 0){
             log.info("Attempting to parse rss feed: "+ this.url );
             log.info("This Feed has "+items +" items");
