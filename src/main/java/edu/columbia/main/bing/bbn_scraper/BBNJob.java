@@ -49,21 +49,13 @@ public class BBNJob extends BabelJob {
      * @param URL A url from bing search resutls
      */
     public void setURL(String URL) {
-        System.out.println("Setting " + URL);
         java.net.URL tempUrl = null;
         try {
             tempUrl = new URL(URL);
-            System.out.println("Temp " + tempUrl);
         } catch (MalformedURLException e) {
-            System.out.println("Fail");
             log.debug(e);
             this.isValid = false;
         }
-        this.url = "http://" + tempUrl.getHost(); //  + "/feeds/posts/default";
-        System.out.println(this.url);
-        // Ignore blogspot homepage urls
-        // if (this.url.equals("http://www.blogspot.com/feeds/posts/default")){
-        //    this.isValid = false;
-        //}
+        this.url = tempUrl.toString();
     }
 }
