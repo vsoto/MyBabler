@@ -50,7 +50,8 @@ public class SoupScraper {
     public AbstractMap.SimpleEntry<Integer, Integer> fetchAndSave() throws Exception {
 
         URL url = new URL(this.url);
-
+        System.out.println("Fetching and saving " + this.url);
+        
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed feed = input.build(new XmlReader(url));
 
