@@ -53,7 +53,9 @@ public class BBNJob extends BabelJob {
         java.net.URL tempUrl = null;
         try {
             tempUrl = new URL(URL);
+            System.out.println("Temp " + tempUrl);
         } catch (MalformedURLException e) {
+            System.out.println("Fail");
             log.debug(e);
             this.isValid = false;
         }
