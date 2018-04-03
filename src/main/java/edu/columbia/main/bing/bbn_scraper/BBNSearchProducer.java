@@ -108,7 +108,6 @@ public class BBNSearchProducer extends BabelProducer {
             for (JsonElement entry : webPages.getAsJsonArray("value")) {
                 JsonObject result = entry.getAsJsonObject();
                 String url = result.getAsJsonPrimitive("url").getAsString();
-                System.out.println(url);
                 urls.add(url);
             }
         }

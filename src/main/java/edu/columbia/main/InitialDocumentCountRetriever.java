@@ -51,7 +51,6 @@ public class InitialDocumentCountRetriever {
                 numDocuments++;
 
                 String filename = pathBuildTranscripts + "/" + listOfFiles[i].getName();
-                System.out.println("File " + listOfFiles[i].getName());
                 HashSet<String> document_vocabulary = getDocumentNGrams(filename, 4);
                 // Update vocabulary
                 vocabulary.addAll(document_vocabulary);

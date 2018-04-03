@@ -47,11 +47,13 @@ public class SoupScraper {
     public AbstractMap.SimpleEntry<Integer, Integer> fetchAndSave() throws Exception {
 
         URL url = new URL(this.url);
-        System.out.println("Fetching and saving " + this.url);
 
         Document doc = Jsoup.connect(this.url).get();
         String title = doc.title();
         String content = doc.text();
+        
+        System.out.println("Fetching and saving " + this.url);
+        System.out.println(content);
 
         try {
             Result result = ld.detectLanguage(content, language);
