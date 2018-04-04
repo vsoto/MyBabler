@@ -70,14 +70,19 @@ public class SoupScraper {
 
         try {
             Result result = ld.detectLanguage(content, language);
+            System.out.println(result.languageCode + "\t" + language);
             if (result.languageCode.equals(language) && result.isReliable) {
                 FileSaver file = new FileSaver(content, this.language, "soup", this.url, this.url, String.valueOf(content.hashCode()));
                 String fileName = file.getFileName();
                 BlogPost post = new BlogPost(content, this.language, null, "soup", this.url, this.url, fileName);
                 if (DAO.saveEntry(post)) {
+                    System.out.println("Saving");
                     file.save(this.logDb);
                     numOfFiles++;
                     wrongCount = 0;
+                }
+                else {
+                    System.out.println("Not saving");
                 }
 
             } else {
