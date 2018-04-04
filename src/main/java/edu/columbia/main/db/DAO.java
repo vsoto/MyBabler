@@ -54,8 +54,9 @@ public class DAO {
             return true;
         }
         catch (MongoWriteException ex){
-            if (ex.getCode() != 11000) // Ignore errors about duplicates
-                log.error(ex.getError().getMessage());
+            //if (ex.getCode() != 11000) // Ignore errors about duplicates
+            //    log.error(ex.getError().getMessage());
+            log.error(ex.getError().getMessage());
             return false;
         }
 
@@ -84,7 +85,7 @@ public class DAO {
      * @return true if success
      */
     public static boolean saveEntry(DBEntry entry){
-        return saveEntry(entry,"scraping");
+        return saveEntry(entry, "scraping");
     }
 
 

@@ -58,18 +58,12 @@ public class BBNFetcherAndSaver extends BabelConsumer implements Runnable{
     protected void searchAndSave(BBNJob job){
         try {
             SoupScraper soupScraper = new SoupScraper(job.getURL(), job.getLanguage(), job.getDB(), this.ld);
-            AbstractMap.SimpleEntry <Integer,Integer> vals = soupScraper.fetchAndSave();
-            TaskLogger taskLogger = this.viewManager.getLogger(job.getLanguage());
-            taskLogger.addTodupsdCount(vals.getKey());
-            taskLogger.addToNotInLang(vals.getValue());
-
+            soupScraper.fetchAndSave();
         } catch (MalformedURLException e) {
             log.error(e);
-
         } catch (Exception ex){
             log.error(ex);
         }
-
     }
 
 

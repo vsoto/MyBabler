@@ -33,8 +33,6 @@ public class SoupScraper {
 
     private final LanguageDetector ld;
     public String language = "";
-    public int numOfFiles = 0;
-    public int wrongCount = 0;
     private LogDB logDb;
     private String url;
     static Logger log = Logger.getLogger(SoupScraper.class);
@@ -47,7 +45,7 @@ public class SoupScraper {
 
     }
 
-    public AbstractMap.SimpleEntry<Integer, Integer> fetchAndSave() throws Exception {
+    public void fetchAndSave() throws Exception {
 
         URL url = new URL(this.url);
 
@@ -76,10 +74,8 @@ public class SoupScraper {
                 String fileName = file.getFileName();
                 BlogPost post = new BlogPost(content, this.language, null, "soup", this.url, this.url, fileName);
                 if (DAO.saveEntry(post)) {
-                    System.out.println("Saving");
+                    System.out.println("Saving data!");
                     file.save(this.logDb);
-                    numOfFiles++;
-                    wrongCount = 0;
                 }
                 else {
                     System.out.println("Not saving");
@@ -87,17 +83,11 @@ public class SoupScraper {
 
             } else {
                 log.info("Item " + title + "is in a diff languageCode, skipping this post  " + result.languageCode);
-                wrongCount++;
-                if (wrongCount > 3) {
-                    log.info("Already found 3 posts in the wrong languageCode, skipping this blog");
-                }
-
             }
 
         } catch (Exception e) {
             log.error(e);
         }
-        return new AbstractMap.SimpleEntry<>(numOfFiles, wrongCount);
     }
 
 //    public static List getAllPostsFromFeed(String urlToGet, String source) throws IOException, FeedException {
