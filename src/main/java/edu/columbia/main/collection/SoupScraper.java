@@ -52,7 +52,7 @@ public class SoupScraper {
         URL url = new URL(this.url);
 
         Document doc = Jsoup.connect(this.url).get();
-        boolean valid = Jsoup.isValid(doc, Whitelist.basic());
+        boolean valid = Jsoup.isValid(doc.html(), Whitelist.basic());
 
         if (valid) {
             System.out.println("The document is valid");
