@@ -16,6 +16,8 @@ import edu.columbia.main.language_id.Result;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.safety.Cleaner;
+import org.jsoup.safety.Whitelist;
 
 import java.io.IOException;
 import java.net.URL;
@@ -46,70 +48,20 @@ public class SoupScraper {
     }
 
     public AbstractMap.SimpleEntry<Integer, Integer> fetchAndSave() throws Exception {
-        return fetchAndSaveRSS();
-    }
-
-    public AbstractMap.SimpleEntry<Integer, Integer> fetchAndSaveRSS() throws Exception {
-
-        URL url = new URL(this.url);
-
-        SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed = input.build(new XmlReader(url));
-
-        int items = feed.getEntries().size();
-
-        if (items > 0) {
-            log.info("Attempting to parse rss feed: " + this.url);
-            log.info("This Feed has " + items + " items");
-        }
-
-        List<SyndEntry> entries = feed.getEntries();
-
-        for (SyndEntry item : entries) {
-            log.info("Title: " + item.getTitle());
-            log.info("Link: " + item.getLink());
-            SyndContentImpl contentHolder = (SyndContentImpl) item.getContents().get(0);
-            String content = contentHolder.getValue();
-
-            //content might contain html data, let's clean it up
-            Document doc = Jsoup.parse(content);
-            content = doc.text();
-            try {
-                Result result = ld.detectLanguage(content, language);
-                if (result.languageCode.equals(language) && result.isReliable) {
-
-                    FileSaver file = new FileSaver(content, this.language, "bs", item.getLink(), item.getUri(), String.valueOf(content.hashCode()));
-                    String fileName = file.getFileName();
-                    BlogPost post = new BlogPost(content, this.language, null, "bs", item.getLink(), item.getUri(), fileName);
-                    if (DAO.saveEntry(post)) {
-                        file.save(this.logDb);
-                        numOfFiles++;
-                        wrongCount = 0;
-                    }
-
-                } else {
-                    log.info("Item " + item.getTitle() + "is in a diff languageCode, skipping this post  " + result.languageCode);
-                    wrongCount++;
-                    if (wrongCount > 3) {
-                        log.info("Already found 3 posts in the wrong languageCode, skipping this blog");
-                    }
-                    break;
-                }
-
-            } catch (Exception e) {
-                log.error(e);
-                break;
-            }
-
-        }
-        return new AbstractMap.SimpleEntry<>(numOfFiles, wrongCount);
-    }
-
-    public AbstractMap.SimpleEntry<Integer, Integer> fetchAndSaveSoup() throws Exception {
 
         URL url = new URL(this.url);
 
         Document doc = Jsoup.connect(this.url).get();
+        boolean valid = Jsoup.isValid(doc, Whitelist.basic());
+
+        if (valid) {
+            System.out.println("The document is valid");
+        } else {
+            System.out.println("The document is not valid.");
+            System.out.println("Cleaned document");
+            doc = new Cleaner(Whitelist.basic()).clean(doc);
+        }
+
         String title = doc.title();
         String content = doc.text();
 
