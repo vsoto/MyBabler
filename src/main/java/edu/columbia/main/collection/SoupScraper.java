@@ -10,7 +10,7 @@ import edu.columbia.main.FileSaver;
 import edu.columbia.main.LogDB;
 import static edu.columbia.main.collection.RSSScraper.log;
 import edu.columbia.main.db.DAO;
-import edu.columbia.main.db.Models.BlogPost;
+import edu.columbia.main.db.Models.BBNPost;
 import edu.columbia.main.language_id.LanguageDetector;
 import edu.columbia.main.language_id.Result;
 import org.apache.log4j.Logger;
@@ -52,76 +52,22 @@ public class SoupScraper {
         Document doc = Jsoup.connect(this.url).get();
         boolean valid = Jsoup.isValid(doc.html(), Whitelist.basic());
 
-        if (valid) {
-            System.out.println("The document is valid");
-        } else {
-            System.out.println("The document is not valid.");
-            System.out.println("Cleaned document");
+        if (! valid) {
             doc = new Cleaner(Whitelist.basic()).clean(doc);
         }
 
         String title = doc.title();
         String content = doc.text();
-
-        System.out.println("Fetching and saving " + this.url);
-        System.out.println(content);
-
+        
         try {
-            Result result = ld.detectLanguage(content, language);
-            System.out.println(result.languageCode + "\t" + language);
-            if (result.languageCode.equals(language) && result.isReliable) {
-                FileSaver file = new FileSaver(content, this.language, "soup", this.url, this.url, String.valueOf(content.hashCode()));
-                String fileName = file.getFileName();
-                BlogPost post = new BlogPost(content, this.language, null, "soup", this.url, this.url, fileName);
-                if (DAO.saveEntry(post)) {
-                    System.out.println("Saving data!");
-                    file.save(this.logDb);
-                }
-                else {
-                    System.out.println("Not saving");
-                }
-
-            } else {
-                log.info("Item " + title + "is in a diff languageCode, skipping this post  " + result.languageCode);
+            FileSaver file = new FileSaver(content, this.language, "soup", this.url, this.url, String.valueOf(content.hashCode()));
+            String fileName = file.getFileName();
+            BBNPost post = new BBNPost(content, this.language, null, "soup", this.url, this.url, fileName);
+            if (DAO.saveEntry(post)) {
+                file.save(this.logDb);
             }
-
         } catch (Exception e) {
             log.error(e);
         }
     }
-
-//    public static List getAllPostsFromFeed(String urlToGet, String source) throws IOException, FeedException {
-//
-//        ArrayList<BlogPost> posts = new ArrayList<BlogPost>();
-//
-//        URL url = new URL(urlToGet);
-//        SyndFeedInput input = new SyndFeedInput();
-//        try {
-//            SyndFeed feed = input.build(new XmlReader(url));
-//
-//            int items = feed.getEntries().size();
-//
-//            if (items > 0) {
-//                log.info("Attempting to parse rss feed: " + urlToGet);
-//                log.info("This Feed has " + items + " items");
-//                List<SyndEntry> entries = feed.getEntries();
-//
-//                for (SyndEntry item : entries) {
-//                    if (item.getContents().size() > 0) {
-//                        SyndContentImpl contentHolder = (SyndContentImpl) item.getContents().get(0);
-//                        String content = contentHolder.getValue();
-//                        if (content != null && !content.isEmpty()) {
-//                            BlogPost post = new BlogPost(content, null, null, source, item.getLink(), item.getUri(), null);
-//                            posts.add(post);
-//                        }
-//                    }
-//                }
-//            }
-//            return posts;
-//        } catch (Exception ex) {
-//            log.error(ex);
-//            return posts;
-//        }
-//
-//    }
 }

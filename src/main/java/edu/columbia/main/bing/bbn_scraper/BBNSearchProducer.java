@@ -119,12 +119,9 @@ public class BBNSearchProducer extends BabelProducer {
         boolean breakFlag = false;
         int counter = 0;
         this.subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
-        // String searchQuery = "site:blogspot.com " + " \""+word+"\"" + " NOT lang:en";
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
         try {
-            System.out.println("Querying: " + ngram);
             for (int i = 0; !breakFlag; i++) {
-                System.out.println("Page: " + i);
                 SearchResults result = this.SearchWeb(searchQuery, "50", String.valueOf(i * 50));
                 ArrayList<String> urls = getURLs(result.jsonResponse);
                 if (counter++ == 100 || urls.size() == 0) {

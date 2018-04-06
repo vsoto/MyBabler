@@ -5,6 +5,7 @@ import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import edu.columbia.main.db.Models.BBNPost;
 import edu.columbia.main.db.Models.BlogPost;
 import edu.columbia.main.db.Models.DBEntry;
 import edu.columbia.main.db.Models.ForumPost;
@@ -54,9 +55,8 @@ public class DAO {
             return true;
         }
         catch (MongoWriteException ex){
-            //if (ex.getCode() != 11000) // Ignore errors about duplicates
-            //    log.error(ex.getError().getMessage());
-            log.error(ex.getError().getMessage());
+            if (ex.getCode() != 11000) // Ignore errors about duplicates
+                log.error(ex.getError().getMessage());
             return false;
         }
 
@@ -75,6 +75,8 @@ public class DAO {
             collectionName = "blogPosts";
         else if(entry instanceof ForumPost)
             collectionName = "forumPosts";
+        else if(entry instanceof BBNPost)
+            collectionName = "bbnPosts";
         return collectionName;
     }
 
@@ -136,6 +138,8 @@ public class DAO {
             collectionName = "blogPosts";
         else if (ForumPost.class == type)
             collectionName = "forumPosts";
+        else if (BBNPost.class == type)
+            collectionName = "bbnPosts";
 
         return db.getCollection(collectionName, BasicDBObject.class);
     }
