@@ -3,6 +3,8 @@ package edu.columbia.main;
 import edu.columbia.main.article_extraction.PostExtractor;
 
 import edu.columbia.main.bing.bbn_scraper.BBNJobManager;
+import edu.columbia.main.bing.bbn_scraper.InitialDocumentCountRetriever;
+import edu.columbia.main.bing.bbn_scraper.RefinedDocumentCountRetriever;
 import edu.columbia.main.bing.blogspot_scraper.BSJobManager;
 import edu.columbia.main.bing.phpBBScraper.BBJobManager;
 import edu.columbia.main.configuration.BabelConfig;
@@ -90,6 +92,9 @@ public class BabelMain {
    
     @Option(name="-ibbn", aliases = "--init_bbn", usage="Computes initial ranking of n-grams for BING querying, BBN style") 
     private static Boolean initBBNScraping = false;
+    
+    @Option(name="-rbbn", aliases = "--refine_bbn", usage="Computes initial ranking of n-grams for BING querying, BBN style") 
+    private static Boolean refineBBNScraping = false;
 
 
     @Option(name="-tb", aliases = "--tagBBN", usage="Tags bbn data for language")
@@ -125,7 +130,6 @@ public class BabelMain {
         if(pathConfig!=null)
         {
             BabelConfig.InstantiateWithConfigFile(pathConfig);
-            System.out.println("BYE");
         }
 
         if(langs != null){
@@ -152,6 +156,9 @@ public class BabelMain {
 
 	if (initBBNScraping == true) {
 		new InitialDocumentCountRetriever().start(args[1], args[2]);
+	}
+        else if (refineBBNScraping == true) {
+		new RefinedDocumentCountRetriever().start(args[1], args[2]);
 	}
 	else if (module.equals("bbn")) {
 		System.out.println("Starting BBN-style scraper");

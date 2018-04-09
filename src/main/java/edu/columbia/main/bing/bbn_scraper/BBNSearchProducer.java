@@ -28,6 +28,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import static edu.columbia.main.bing.bbn_scraper.BBNSearchProducer.numOfRequests;
+import edu.columbia.main.collection.SoupScraper;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -146,29 +148,33 @@ public class BBNSearchProducer extends BabelProducer {
             e.printStackTrace(System.out);
             System.exit(1);
         }
-        // The results are paged. You can get 50 results per page max.
-        //for (int i=1; !breakFlag ; i++) {
-        //    aq.setPage(i);
-        //    aq.doQuery();
-        //    AzureSearchResultSet<AzureSearchWebResult> ars = aq.getQueryResult();
-        //    if(counter++ == 100 ||ars.getAsrs().size() == 0)
-        //        breakFlag = true;
-        //    numOfRequests.getAndIncrement();
-        //    for (AzureSearchWebResult anr : ars) {
-        //        BBNJob job = new BBNJob(anr.getUrl(), lang, logDb);
-        //        try {
-        //            if(job.isValid())
-        //                broker.put(job);
-        //           else{
-        //                log.debug("Job not valid: " + job);
-        //            }
-        //       } catch (InterruptedException e) {
-        //            log.error(e);
-        //        }
-        //    }
-        //}
+    }
+    protected static SearchStats searchWordAndRetrieveStats(String ngram, HashMap<String, Double> unigram_freq) {
+        int document_freq = 0;
+        double web_precision = 0.0;
+     
+        subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
+        String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
+        
+        try {
+                SearchResults result = SearchWeb(searchQuery, "500", "0");
+                ArrayList<String> urls = getURLs(result.jsonResponse);
+                document_freq = urls.size();
+                for (String url : urls) {
+                    web_precision += SoupScraper.fetchAndCount(url, unigram_freq);
+                }
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            System.exit(1);
+        }
+        System.out.println(ngram + "\t" + document_freq + "\t" + web_precision);
+        SearchStats st = new SearchStats(document_freq, web_precision);
+        return st;
     }
 }
+
+
+
 
 // Container class for search results encapsulates relevant headers and JSON data
 class SearchResults {
@@ -179,5 +185,15 @@ class SearchResults {
     SearchResults(HashMap<String, String> headers, String json) {
         relevantHeaders = headers;
         jsonResponse = json;
+    }
+}
+
+class SearchStats {
+    int document_freq;
+    double web_precision;
+    
+    SearchStats(int document_freq, double web_precision) {
+        this.document_freq = document_freq;
+        this.web_precision = web_precision;
     }
 }

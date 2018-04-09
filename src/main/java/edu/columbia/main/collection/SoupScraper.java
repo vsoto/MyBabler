@@ -24,6 +24,10 @@ import java.net.URL;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+
+
+
 
 /**
  * This class scrapes data from a RSS feed, checks that it is in the desired
@@ -69,5 +73,25 @@ public class SoupScraper {
         } catch (Exception e) {
             log.error(e);
         }
+    }
+    
+    public static double fetchAndCount(String url_string, HashMap<String, Double> unigram_freq) throws Exception {
+        URL url = new URL(url_string);
+
+        Document doc = Jsoup.connect(url).get();
+        boolean valid = Jsoup.isValid(doc.html(), Whitelist.basic());
+
+        if (! valid) {
+            doc = new Cleaner(Whitelist.basic()).clean(doc);
+        }
+        
+        double web_precision = 0.0;
+        String content = doc.title() + " " + doc.text();
+        for (String token: content.split(" ")) {
+            if (unigram_freq.containsKey(token)) {
+                web_precision += unigram_freq.get(token);
+            }
+        }
+        return web_precision;
     }
 }
