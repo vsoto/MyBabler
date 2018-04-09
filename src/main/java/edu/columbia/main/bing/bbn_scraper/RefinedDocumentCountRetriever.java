@@ -40,7 +40,7 @@ public class RefinedDocumentCountRetriever {
      */
     public static void start(String pathBuildTranscripts, String initialRankingFile, String refinedRankingFile) {
         ArrayList<SimpleEntry<String, Double>> topTerms = getHighestRankedNGrams(initialRankingFile, Integer.MAX_VALUE);
-        int numTopTerms = 1000;
+        int numTopTerms = 100;
         System.out.println("Will refine top " + numTopTerms + " terms");
         
         HashMap<String, Double> unigram_freq = getCorpusNGramsFrequency(pathBuildTranscripts);
@@ -56,9 +56,9 @@ public class RefinedDocumentCountRetriever {
                 int df = st.document_freq;
                 double p = st.web_precision;
                 scores.put(term, df * p);
-            } else {
+            } /*else {
                 scores.put(term, unrefined_score);
-            }
+            }*/
             num_term++;
         }
 
