@@ -148,9 +148,7 @@ public class BBNSearchProducer extends BabelProducer {
     protected static SearchStats searchWordAndRetrieveStats(String ngram, HashMap<String, Double> unigram_freq) {
         int document_freq = 0;
         double web_precision = 0.0;
-     
-        String subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
-        System.out.println("Key is" + subscriptionKey);
+    
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
         
         try {
@@ -158,7 +156,16 @@ public class BBNSearchProducer extends BabelProducer {
                 ArrayList<String> urls = getURLs(result.jsonResponse);
                 document_freq = urls.size();
                 for (String url : urls) {
-                    web_precision += SoupScraper.fetchAndCount(url, unigram_freq);
+                    double inc_precision = 0.0;
+                    try {
+                         inc_precision = SoupScraper.fetchAndCount(url, unigram_freq);
+                    } catch(Exception e) {
+                        System.out.println(e);
+
+                    } finally {
+                        web_precision += inc_precision;
+                    }
+                    
                 }
         } catch (Exception e) {
             e.printStackTrace(System.out);
