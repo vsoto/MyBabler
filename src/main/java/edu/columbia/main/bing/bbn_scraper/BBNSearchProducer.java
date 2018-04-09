@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Searches bing API for a word and puts all results into broker
  */
 public class BBNSearchProducer extends BabelProducer {
+
     // Verify the endpoint URI.  At this writing, only one endpoint is used for Bing
     // search APIs.  In the future, regional endpoints may be available.  If you
     // encounter unexpected authorization errors, double-check this value against
@@ -145,39 +146,45 @@ public class BBNSearchProducer extends BabelProducer {
             System.exit(1);
         }
     }
+
     protected static SearchStats searchWordAndRetrieveStats(String ngram, HashMap<String, Double> unigram_freq) {
         int document_freq = 0;
         double unigram_score = 0.0;
         int total_num_tokens = 0;
-    
+
+        boolean breakFlag = false;
+        int counter = 0;
+
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
-        
+
         try {
-                SearchResults result = SearchWeb(searchQuery, "500", "0");
+            for (int i = 0; !breakFlag; i++) {
+                SearchResults result = SearchWeb(searchQuery, "50", String.valueOf(i * 50));
                 ArrayList<String> urls = getURLs(result.jsonResponse);
-                document_freq = urls.size();
+                if (counter++ == 10 || urls.isEmpty()) {
+                    breakFlag = true;
+                }
+                document_freq += urls.size();
                 for (String url : urls) {
                     try {
                         SimpleEntry<Double, Integer> r = SoupScraper.fetchAndCount(url, unigram_freq);
                         unigram_score += r.getKey();
                         total_num_tokens += r.getValue();
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         System.out.println(e);
                     }
                 }
+            }
         } catch (Exception e) {
             e.printStackTrace(System.out);
             System.exit(1);
         }
-        double web_precision = unigram_score*1.0/total_num_tokens;
+        double web_precision = unigram_score * 1.0 / total_num_tokens;
         System.out.println(ngram + "\t" + document_freq + "\t" + unigram_score + "\t" + total_num_tokens + "\t" + web_precision);
         SearchStats st = new SearchStats(document_freq, web_precision);
         return st;
     }
 }
-
-
-
 
 // Container class for search results encapsulates relevant headers and JSON data
 class SearchResults {
@@ -192,9 +199,10 @@ class SearchResults {
 }
 
 class SearchStats {
+
     int document_freq;
     double web_precision;
-    
+
     SearchStats(int document_freq, double web_precision) {
         this.document_freq = document_freq;
         this.web_precision = web_precision;
