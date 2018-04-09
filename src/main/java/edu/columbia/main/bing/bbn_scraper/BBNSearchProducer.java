@@ -30,7 +30,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import static edu.columbia.main.bing.bbn_scraper.BBNSearchProducer.numOfRequests;
 import edu.columbia.main.collection.SoupScraper;
-
+import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -147,7 +147,8 @@ public class BBNSearchProducer extends BabelProducer {
     }
     protected static SearchStats searchWordAndRetrieveStats(String ngram, HashMap<String, Double> unigram_freq) {
         int document_freq = 0;
-        double web_precision = 0.0;
+        double unigram_score = 0.0;
+        int total_num_tokens = 0;
     
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
         
@@ -156,22 +157,20 @@ public class BBNSearchProducer extends BabelProducer {
                 ArrayList<String> urls = getURLs(result.jsonResponse);
                 document_freq = urls.size();
                 for (String url : urls) {
-                    double inc_precision = 0.0;
                     try {
-                         inc_precision = SoupScraper.fetchAndCount(url, unigram_freq);
+                        SimpleEntry<Double, Integer> r = SoupScraper.fetchAndCount(url, unigram_freq);
+                        unigram_score += r.getKey();
+                        total_num_tokens += r.getValue();
                     } catch(Exception e) {
                         System.out.println(e);
-
-                    } finally {
-                        web_precision += inc_precision;
                     }
-                    
                 }
         } catch (Exception e) {
             e.printStackTrace(System.out);
             System.exit(1);
         }
-        System.out.println(ngram + "\t" + document_freq + "\t" + web_precision);
+        double web_precision = unigram_score*1.0/total_num_tokens;
+        System.out.println(ngram + "\t" + document_freq + "\t" + unigram_score + "\t" + total_num_tokens + "\t" + web_precision);
         SearchStats st = new SearchStats(document_freq, web_precision);
         return st;
     }

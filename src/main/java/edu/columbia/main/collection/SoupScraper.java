@@ -25,6 +25,8 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.AbstractMap.SimpleEntry;
+
 
 
 
@@ -72,7 +74,7 @@ public class SoupScraper {
         }
     }
     
-    public static double fetchAndCount(String url, HashMap<String, Double> unigram_freq) throws Exception {
+    public static SimpleEntry<Double, Integer> fetchAndCount(String url, HashMap<String, Double> unigram_freq) throws Exception {
         Document doc = Jsoup.connect(url).get();
         boolean valid = Jsoup.isValid(doc.html(), Whitelist.basic());
 
@@ -81,12 +83,14 @@ public class SoupScraper {
         }
         
         double web_precision = 0.0;
+        int count_tokens = 0;
         String content = doc.title() + " " + doc.text();
         for (String token: content.split(" ")) {
             if (unigram_freq.containsKey(token)) {
                 web_precision += unigram_freq.get(token);
             }
+            count_tokens++;
         }
-        return web_precision;
+        return new SimpleEntry<Double,Integer>(web_precision,count_tokens);
     }
 }
