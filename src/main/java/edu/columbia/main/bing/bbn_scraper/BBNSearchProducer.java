@@ -44,6 +44,7 @@ public class BBNSearchProducer extends BabelProducer {
     // search APIs.  In the future, regional endpoints may be available.  If you
     // encounter unexpected authorization errors, double-check this value against
     // the endpoint for your Bing Web search instance in your Azure dashboard.
+    static String subscriptionKey = "c8a5e99c93d948e9b69efe4588f2834e";
     static String host = "https://api.cognitive.microsoft.com";
     static String path = "/bing/v7.0/search";
 
@@ -60,7 +61,7 @@ public class BBNSearchProducer extends BabelProducer {
         numOfRequests = new AtomicInteger();
     }
 
-    private static SearchResults SearchWeb(String searchQuery, String subscriptionKey, String count, String offset) throws Exception {
+    private static SearchResults SearchWeb(String searchQuery, String count, String offset) throws Exception {
         URL url = new URL(host + path + "?q=" + URLEncoder.encode(searchQuery, "UTF-8") + "&count=" + count + "&offset=" + offset);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setRequestProperty("Ocp-Apim-Subscription-Key", subscriptionKey);
@@ -116,11 +117,10 @@ public class BBNSearchProducer extends BabelProducer {
     protected void searchWordAndSave(String ngram) {
         boolean breakFlag = false;
         int counter = 0;
-        String subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
         try {
             for (int i = 0; !breakFlag; i++) {
-                SearchResults result = this.SearchWeb(searchQuery, subscriptionKey, "50", String.valueOf(i * 50));
+                SearchResults result = this.SearchWeb(searchQuery, "50", String.valueOf(i * 50));
                 ArrayList<String> urls = getURLs(result.jsonResponse);
                 if (counter++ == 100 || urls.size() == 0) {
                     breakFlag = true;
@@ -154,7 +154,7 @@ public class BBNSearchProducer extends BabelProducer {
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
         
         try {
-                SearchResults result = SearchWeb(searchQuery, subscriptionKey, "500", "0");
+                SearchResults result = SearchWeb(searchQuery, "500", "0");
                 ArrayList<String> urls = getURLs(result.jsonResponse);
                 document_freq = urls.size();
                 for (String url : urls) {
