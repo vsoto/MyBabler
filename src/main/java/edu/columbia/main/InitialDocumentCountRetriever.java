@@ -69,11 +69,12 @@ public class InitialDocumentCountRetriever {
         // Compute DF(t)
         HashMap<String, Double> scores = new HashMap<String, Double>();
         for (String term : vocabulary) {
-            Double df = document_counts.get(term) * 1.0 / numDocuments;
+            int df = document_counts.get(term);
             Double p0 = term.length() * term.length() * 0.0025;
             if (p0 > 1.0) {
                 p0 = 1.0;
             }
+            System.out.println(term + "\t" + df + "\t" + p0);
             scores.put(term, df * p0);
         }
 
