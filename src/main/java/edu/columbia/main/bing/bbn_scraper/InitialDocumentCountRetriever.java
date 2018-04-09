@@ -75,6 +75,7 @@ public class InitialDocumentCountRetriever {
             if (p0 > 1.0) {
                 p0 = 1.0;
             }
+            System.out.println(term + "\t" + df + "\t" + p0);
             scores.put(term, df * p0);
         }
 
