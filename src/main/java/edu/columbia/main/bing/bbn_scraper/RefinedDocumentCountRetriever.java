@@ -38,10 +38,12 @@ public class RefinedDocumentCountRetriever {
      ** @param path location of file
      *
      */
-    public static void start(String initialRankingFile, String refinedRankingFile) {
-        ArrayList<Entry<String, Double>> topTerms = getHighestRankedNGrams(initialRankingFile, Integer.MAX_VALUE);
+    public static void start(String pathBuildTranscripts, String initialRankingFile, String refinedRankingFile) {
+        ArrayList<SimpleEntry<String, Double>> topTerms = getHighestRankedNGrams(initialRankingFile, Integer.MAX_VALUE);
         int numTopTerms = 1000;
         System.out.println("Will refine top " + numTopTerms + " terms");
+        
+        HashMap<String, Double> unigram_freq = getCorpusNGramsFrequency(pathBuildTranscripts);
 
         // Compute DF(t)
         HashMap<String, Double> scores = new HashMap<String, Double>();
@@ -82,7 +84,7 @@ public class RefinedDocumentCountRetriever {
         }
     }
 
-    public static ArrayList<Entry<String, Double>> getHighestRankedNGrams(String pathRankingFile, int max_entries) {
+    public static ArrayList<SimpleEntry<String, Double>> getHighestRankedNGrams(String pathRankingFile, int max_entries) {
         ArrayList<SimpleEntry<String, Double>> entries = new ArrayList<SimpleEntry<String, Double>>();
         try {
             File file = new File(pathRankingFile);
@@ -146,7 +148,7 @@ public class RefinedDocumentCountRetriever {
         return ngrams;
     }
 
-    private static HashMap<String, Double> getCorpusNGramsFrequency(String path_corpus, Integer max_ngram) {
+    private static HashMap<String, Double> getCorpusNGramsFrequency(String path_corpus) {
         HashMap<String, Double> ngrams_count = new HashMap<String, Double>();
 
         File folder = new File(path_corpus);

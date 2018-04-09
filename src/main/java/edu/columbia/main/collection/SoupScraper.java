@@ -50,9 +50,6 @@ public class SoupScraper {
     }
 
     public void fetchAndSave() throws Exception {
-
-        URL url = new URL(this.url);
-
         Document doc = Jsoup.connect(this.url).get();
         boolean valid = Jsoup.isValid(doc.html(), Whitelist.basic());
 
@@ -75,9 +72,7 @@ public class SoupScraper {
         }
     }
     
-    public static double fetchAndCount(String url_string, HashMap<String, Double> unigram_freq) throws Exception {
-        URL url = new URL(url_string);
-
+    public static double fetchAndCount(String url, HashMap<String, Double> unigram_freq) throws Exception {
         Document doc = Jsoup.connect(url).get();
         boolean valid = Jsoup.isValid(doc.html(), Whitelist.basic());
 
