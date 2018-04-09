@@ -40,10 +40,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Searches bing API for a word and puts all results into broker
  */
 public class BBNSearchProducer extends BabelProducer {
-
-    // Replace the subscriptionKey string value with your valid subscription key.
-    static String subscriptionKey = "enter key here";
-
     // Verify the endpoint URI.  At this writing, only one endpoint is used for Bing
     // search APIs.  In the future, regional endpoints may be available.  If you
     // encounter unexpected authorization errors, double-check this value against
@@ -64,7 +60,7 @@ public class BBNSearchProducer extends BabelProducer {
         numOfRequests = new AtomicInteger();
     }
 
-    private static SearchResults SearchWeb(String searchQuery, String count, String offset) throws Exception {
+    private static SearchResults SearchWeb(String searchQuery, String subscriptionKey, String count, String offset) throws Exception {
         URL url = new URL(host + path + "?q=" + URLEncoder.encode(searchQuery, "UTF-8") + "&count=" + count + "&offset=" + offset);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setRequestProperty("Ocp-Apim-Subscription-Key", subscriptionKey);
@@ -120,11 +116,11 @@ public class BBNSearchProducer extends BabelProducer {
     protected void searchWordAndSave(String ngram) {
         boolean breakFlag = false;
         int counter = 0;
-        this.subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
+        String subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
         try {
             for (int i = 0; !breakFlag; i++) {
-                SearchResults result = this.SearchWeb(searchQuery, "50", String.valueOf(i * 50));
+                SearchResults result = this.SearchWeb(searchQuery, subscriptionKey, "50", String.valueOf(i * 50));
                 ArrayList<String> urls = getURLs(result.jsonResponse);
                 if (counter++ == 100 || urls.size() == 0) {
                     breakFlag = true;
@@ -153,11 +149,12 @@ public class BBNSearchProducer extends BabelProducer {
         int document_freq = 0;
         double web_precision = 0.0;
      
-        subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
+        String subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
+        System.out.println("Key is" + subscriptionKey);
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
         
         try {
-                SearchResults result = SearchWeb(searchQuery, "500", "0");
+                SearchResults result = SearchWeb(searchQuery, subscriptionKey, "500", "0");
                 ArrayList<String> urls = getURLs(result.jsonResponse);
                 document_freq = urls.size();
                 for (String url : urls) {
