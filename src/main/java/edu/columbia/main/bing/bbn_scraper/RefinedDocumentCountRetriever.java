@@ -40,7 +40,7 @@ public class RefinedDocumentCountRetriever {
      */
     public static void start(String pathBuildTranscripts, String initialRankingFile, String refinedRankingFile) {
         ArrayList<SimpleEntry<String, Double>> topTerms = getHighestRankedNGrams(initialRankingFile, Integer.MAX_VALUE);
-        int numTopTerms = 10;
+        int numTopTerms = 4;
         System.out.println("Will refine top " + numTopTerms + " terms");
         
         HashMap<String, Double> unigram_freq = getCorpusNGramsFrequency(pathBuildTranscripts);
