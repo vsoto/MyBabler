@@ -53,17 +53,22 @@ public class RefinedDocumentCountRetriever {
             Double unrefined_score = entry.getValue();
             if (num_term < numTopTerms) {
                 SearchStats st = BBNSearchProducer.searchWordAndRetrieveStats(term, unigram_freq);
+                System.out.println(st.document_freq + "\t" + st.web_precision);
                 int df = st.document_freq;
                 double p = st.web_precision;
+                System.out.println(st.document_freq + "\t" + st.web_precision + "\t" + df*p);
                 scores.put(term, df * p);
-            } /*else {
-                scores.put(term, unrefined_score);
-            }*/
-            num_term++;
+                num_term++;
+            } else {
+                break;
+                //scores.put(term, unrefined_score);
+            }
+            
         }
-
+        System.out.println(scores.size());
         HashMapSorting hms = new HashMapSorting();
         Set<Entry<String, Double>> sorted_entries = hms.sort(scores);
+        System.out.println(sorted_entries.size());
         writeToFile(refinedRankingFile, sorted_entries);
 
     }
@@ -73,7 +78,7 @@ public class RefinedDocumentCountRetriever {
             File file = new File(pathRankingFile);
             FileWriter fileWriter = new FileWriter(file);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
+            System.out.println(sorted_entries.size());
             for (Entry<String, Double> entry : sorted_entries) {
                 bufferedWriter.write(entry.getKey() + "\t" + entry.getValue() + "\n");
             }
