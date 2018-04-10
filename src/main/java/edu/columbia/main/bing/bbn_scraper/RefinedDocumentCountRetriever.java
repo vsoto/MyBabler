@@ -80,9 +80,10 @@ public class RefinedDocumentCountRetriever {
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             System.out.println(sorted_entries.size());
             for (Entry<String, Double> entry : sorted_entries) {
+                System.out.println(entry.getKey() + "\t" + entry.getValue() + "\n");
                 bufferedWriter.write(entry.getKey() + "\t" + entry.getValue() + "\n");
             }
-
+            bufferedWriter.close();
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
