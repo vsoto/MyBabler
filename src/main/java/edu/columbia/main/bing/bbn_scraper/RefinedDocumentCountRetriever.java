@@ -54,6 +54,9 @@ public class RefinedDocumentCountRetriever {
             if (num_term < numTopTerms) {
                 SearchStats st = BBNSearchProducer.searchWordAndRetrieveStats(term, unigram_freq);
                 int df = st.document_freq;
+                if (df > 500) {
+                    df = 500;
+                }
                 double p = st.web_precision;
                 scores.put(term, df * p);
                 num_term++;

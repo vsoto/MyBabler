@@ -112,7 +112,7 @@ public class BBNSearchProducer extends BabelProducer {
         }
         return urls;
     }
-    
+
     private static int getTotalEstimatedMatches(String json_text) {
         JsonParser parser = new JsonParser();
         JsonObject json = parser.parse(json_text).getAsJsonObject();
@@ -132,9 +132,9 @@ public class BBNSearchProducer extends BabelProducer {
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
         try {
             for (int i = 0; !breakFlag; i++) {
-                SearchResults result = this.SearchWeb(searchQuery, "50", String.valueOf(i * 50));
+                SearchResults result = SearchWeb(searchQuery, "50", String.valueOf(i * 50));
                 ArrayList<String> urls = getURLs(result.jsonResponse);
-                if (counter++ == 100 || urls.size() == 0) {
+                if (counter++ == 100 || urls.isEmpty()) {
                     breakFlag = true;
                 }
                 numOfRequests.getAndIncrement();
@@ -163,32 +163,24 @@ public class BBNSearchProducer extends BabelProducer {
         double unigram_score = 0.0;
         int total_num_tokens = 0;
 
-        boolean breakFlag = false;
-        int counter = 0;
-
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
 
         try {
-            for (int i = 0; !breakFlag; i++) {
-                SearchResults result = SearchWeb(searchQuery, "50", String.valueOf(i * 50));
-                ArrayList<String> urls = getURLs(result.jsonResponse);
-                if (counter++ == 10 || urls.isEmpty()) {
-                    breakFlag = true;
-                }
-                System.out.println(ngram);
-                document_freq = getTotalEstimatedMatches(result.jsonResponse);
-                if (i == 0) {
-                    for (String url : urls) {
-                        try {
-                            SimpleEntry<Double, Integer> r = SoupScraper.fetchAndCount(url, unigram_freq);
-                            unigram_score += r.getKey();
-                            total_num_tokens += r.getValue();
-                        } catch (Exception e) {
-                            System.out.println(e);
-                        }
-                    }
+
+            SearchResults result = SearchWeb(searchQuery, "50", "0");
+            ArrayList<String> urls = getURLs(result.jsonResponse);
+            document_freq = getTotalEstimatedMatches(result.jsonResponse);
+
+            for (String url : urls) {
+                try {
+                    SimpleEntry<Double, Integer> r = SoupScraper.fetchAndCount(url, unigram_freq);
+                    unigram_score += r.getKey();
+                    total_num_tokens += r.getValue();
+                } catch (Exception e) {
+                    System.out.println(e);
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace(System.out);
             System.exit(1);
