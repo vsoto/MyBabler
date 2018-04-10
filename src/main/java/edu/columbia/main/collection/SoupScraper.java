@@ -27,10 +27,6 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.AbstractMap.SimpleEntry;
 
-
-
-
-
 /**
  * This class scrapes data from a RSS feed, checks that it is in the desired
  * languageCode and finally saves it Created by Gideon on 9/28/14.
@@ -52,16 +48,16 @@ public class SoupScraper {
     }
 
     public void fetchAndSave() throws Exception {
-        Document doc = Jsoup.connect(this.url).get();
+        Document doc = Jsoup.connect(this.url).userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36").get();
         boolean valid = Jsoup.isValid(doc.html(), Whitelist.basic());
 
-        if (! valid) {
+        if (!valid) {
             doc = new Cleaner(Whitelist.basic()).clean(doc);
         }
 
         String title = doc.title();
         String content = doc.text();
-        
+
         try {
             FileSaver file = new FileSaver(content, this.language, "soup", this.url, this.url, String.valueOf(content.hashCode()));
             String fileName = file.getFileName();
@@ -73,24 +69,24 @@ public class SoupScraper {
             log.error(e);
         }
     }
-    
+
     public static SimpleEntry<Double, Integer> fetchAndCount(String url, HashMap<String, Double> unigram_freq) throws Exception {
-        Document doc = Jsoup.connect(url).get();
+        Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36").get();
         boolean valid = Jsoup.isValid(doc.html(), Whitelist.basic());
 
-        if (! valid) {
+        if (!valid) {
             doc = new Cleaner(Whitelist.basic()).clean(doc);
         }
-        
+
         double web_precision = 0.0;
         int count_tokens = 0;
         String content = doc.title() + " " + doc.text();
-        for (String token: content.split(" ")) {
+        for (String token : content.split(" ")) {
             if (unigram_freq.containsKey(token)) {
                 web_precision += unigram_freq.get(token);
             }
             count_tokens++;
         }
-        return new SimpleEntry<Double,Integer>(web_precision,count_tokens);
+        return new SimpleEntry<Double, Integer>(web_precision, count_tokens);
     }
 }

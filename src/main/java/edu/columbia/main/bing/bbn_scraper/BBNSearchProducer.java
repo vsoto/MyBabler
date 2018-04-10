@@ -45,7 +45,7 @@ public class BBNSearchProducer extends BabelProducer {
     // search APIs.  In the future, regional endpoints may be available.  If you
     // encounter unexpected authorization errors, double-check this value against
     // the endpoint for your Bing Web search instance in your Azure dashboard.
-    static String subscriptionKey = "c8a5e99c93d948e9b69efe4588f2834e";
+    static String subscriptionKey = "7112e369e3ad4d3aa00c2db08664f8f7";
     static String host = "https://api.cognitive.microsoft.com";
     static String path = "/bing/v7.0/search";
 
