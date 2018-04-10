@@ -40,7 +40,7 @@ public class RefinedDocumentCountRetriever {
      */
     public static void start(String pathBuildTranscripts, String initialRankingFile, String refinedRankingFile) {
         ArrayList<SimpleEntry<String, Double>> topTerms = getHighestRankedNGrams(initialRankingFile, Integer.MAX_VALUE);
-        int numTopTerms = 4;
+        int numTopTerms = 300;
         System.out.println("Will refine top " + numTopTerms + " terms");
         
         HashMap<String, Double> unigram_freq = getCorpusNGramsFrequency(pathBuildTranscripts);
@@ -53,10 +53,8 @@ public class RefinedDocumentCountRetriever {
             Double unrefined_score = entry.getValue();
             if (num_term < numTopTerms) {
                 SearchStats st = BBNSearchProducer.searchWordAndRetrieveStats(term, unigram_freq);
-                System.out.println(st.document_freq + "\t" + st.web_precision);
                 int df = st.document_freq;
                 double p = st.web_precision;
-                System.out.println(st.document_freq + "\t" + st.web_precision + "\t" + df*p);
                 scores.put(term, df * p);
                 num_term++;
             } else {
@@ -65,10 +63,8 @@ public class RefinedDocumentCountRetriever {
             }
             
         }
-        System.out.println(scores.size());
         HashMapSorting hms = new HashMapSorting();
         Set<Entry<String, Double>> sorted_entries = hms.sort(scores);
-        System.out.println(sorted_entries.size());
         writeToFile(refinedRankingFile, sorted_entries);
 
     }
@@ -78,9 +74,7 @@ public class RefinedDocumentCountRetriever {
             File file = new File(pathRankingFile);
             FileWriter fileWriter = new FileWriter(file);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            System.out.println(sorted_entries.size());
             for (Entry<String, Double> entry : sorted_entries) {
-                System.out.println(entry.getKey() + "\t" + entry.getValue() + "\n");
                 bufferedWriter.write(entry.getKey() + "\t" + entry.getValue() + "\n");
             }
             bufferedWriter.close();

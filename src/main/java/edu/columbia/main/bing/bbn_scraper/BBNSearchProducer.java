@@ -165,13 +165,15 @@ public class BBNSearchProducer extends BabelProducer {
                     breakFlag = true;
                 }
                 document_freq += urls.size();
-                for (String url : urls) {
-                    try {
-                        SimpleEntry<Double, Integer> r = SoupScraper.fetchAndCount(url, unigram_freq);
-                        unigram_score += r.getKey();
-                        total_num_tokens += r.getValue();
-                    } catch (Exception e) {
-                        System.out.println(e);
+                if (i == 0) {
+                    for (String url : urls) {
+                        try {
+                            SimpleEntry<Double, Integer> r = SoupScraper.fetchAndCount(url, unigram_freq);
+                            unigram_score += r.getKey();
+                            total_num_tokens += r.getValue();
+                        } catch (Exception e) {
+                            System.out.println(e);
+                        }
                     }
                 }
             }
