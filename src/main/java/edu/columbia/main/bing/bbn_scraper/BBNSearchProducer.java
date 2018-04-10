@@ -100,7 +100,6 @@ public class BBNSearchProducer extends BabelProducer {
     private static ArrayList<String> getURLs(String json_text) {
         JsonParser parser = new JsonParser();
         JsonObject json = parser.parse(json_text).getAsJsonObject();
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         ArrayList<String> urls = new ArrayList<String>();
 
         if (json.has("webPages")) {
@@ -112,6 +111,18 @@ public class BBNSearchProducer extends BabelProducer {
             }
         }
         return urls;
+    }
+    
+    private static int getTotalEstimatedMatches(String json_text) {
+        JsonParser parser = new JsonParser();
+        JsonObject json = parser.parse(json_text).getAsJsonObject();
+
+        if (json.has("webPages")) {
+            JsonObject webPages = json.getAsJsonObject("webPages");
+            System.out.println(webPages.getAsJsonPrimitive("totalEstimatedMatches").getAsInt());
+            return webPages.getAsJsonPrimitive("totalEstimatedMatches").getAsInt();
+        }
+        return 0;
     }
 
     @Override
@@ -164,7 +175,8 @@ public class BBNSearchProducer extends BabelProducer {
                 if (counter++ == 10 || urls.isEmpty()) {
                     breakFlag = true;
                 }
-                document_freq += urls.size();
+                System.out.println(ngram);
+                document_freq = getTotalEstimatedMatches(result.jsonResponse);
                 if (i == 0) {
                     for (String url : urls) {
                         try {
