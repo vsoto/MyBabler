@@ -51,8 +51,8 @@ public class tagNIST {
         BufferedReader br = new BufferedReader(new FileReader(contentFile));
        
         String line;
-	HashSet<String> langAnchors = loadAnchors(langCode);
-	HashSet<String> engAnchors = loadAnchors("eng");
+	HashSet<String> langAnchors = loadAnchors(langCode, langCode);
+	HashSet<String> engAnchors = loadAnchors(langCode, "eng");
 
 	while ((line = br.readLine()) != null) {
             if (line.startsWith("[")) { 
@@ -76,8 +76,8 @@ public class tagNIST {
         
         String line;
 
-	HashSet<String> langAnchors = loadAnchors(langCode);
-	HashSet<String> engAnchors = loadAnchors("eng");
+	HashSet<String> langAnchors = loadAnchors(langCode, langCode);
+	HashSet<String> engAnchors = loadAnchors(langCode, "eng");
 
 	while ((line = br.readLine()) != null) {
             String outputBlock = outputTaggingLine(langCode, line, langAnchors, engAnchors);
@@ -87,9 +87,9 @@ public class tagNIST {
 	bw.close();
     }
 
-    public static HashSet<String> loadAnchors(String langCode) throws Exception {
+    public static HashSet<String> loadAnchors(String primaryLang, String langCode) throws Exception {
 	HashSet<String> anchors = new HashSet<String>();
-	String anchorsFilename = "anchors/" + langCode + "_anchors.txt";
+	String anchorsFilename = "weak_anchors/" + primaryLang + "/" + langCode +  "_anchors.txt";
         System.out.println(anchorsFilename);
 	InputStream is =  tagNIST.class.getClassLoader().getResourceAsStream(anchorsFilename);
 	BufferedReader br = new BufferedReader(new InputStreamReader(is));
