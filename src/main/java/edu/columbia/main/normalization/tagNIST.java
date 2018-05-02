@@ -35,7 +35,7 @@ public class tagNIST {
 
     public static void start(String path, String saveTo, String langCode) throws Exception {
 
-        if (path.endsWith("transcriptions.txt")) {
+        if (path.endsWith("transcription.txt")) {
             processTranscriptionFile(path, saveTo, langCode);
         } else {
             processTextFile(path, saveTo, langCode);
@@ -46,9 +46,8 @@ public class tagNIST {
     private static void processTranscriptionFile(String path, String saveTo, String langCode) throws Exception {    
         File newLangFile = new File(saveTo);
     	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newLangFile), StandardCharsets.UTF_8));
-        File contentFile = new File(path);
         
-        log.info("LP LOADED");
+        File contentFile = new File(path);
         BufferedReader br = new BufferedReader(new FileReader(contentFile));
        
         String line;
@@ -70,27 +69,19 @@ public class tagNIST {
     private static void processTextFile(String path, String saveTo, String langCode) throws Exception {    
         File newLangFile = new File(saveTo);
     	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newLangFile), StandardCharsets.UTF_8));
-        File contentFile = new File(path);
         
-        log.info("LP LOADED");
+        File contentFile = new File(path);        
         BufferedReader br = new BufferedReader(new FileReader(contentFile));
         
         
         String line;
-	ArrayList<String> lines = new ArrayList<String>();
 
 	HashSet<String> langAnchors = loadAnchors(langCode);
 	HashSet<String> engAnchors = loadAnchors("eng");
 
 	while ((line = br.readLine()) != null) {
-	    if (line.isEmpty()) {
-		String outputBlock = outputTaggingLines(langCode, lines, langAnchors, engAnchors);
-	        bw.write(outputBlock); 
-		lines = new ArrayList<String>();
-	    }
-	    else {
-		lines.add(line);
-	    }
+            String outputBlock = outputTaggingLine(langCode, line, langAnchors, engAnchors);
+            bw.write(outputBlock); 
         }
         br.close();
 	bw.close();
