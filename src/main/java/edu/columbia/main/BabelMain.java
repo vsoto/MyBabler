@@ -16,6 +16,7 @@ import edu.columbia.main.language_id.cld.*;
 import edu.columbia.main.language_id.lingpipe.*;
 import edu.columbia.main.language_id.textcat.*;
 import edu.columbia.main.normalization.tagBBN;
+import edu.columbia.main.normalization.tagNIST;
 import edu.columbia.main.twitter.TwitterCodeSwitchSJobManager;
 import edu.columbia.main.twitter.TwitterJobManager;
 import edu.columbia.main.twitter.TwitterJobManagerUser;
@@ -99,6 +100,9 @@ public class BabelMain {
 
     @Option(name="-tb", aliases = "--tagBBN", usage="Tags bbn data for language")
     private static Boolean tagBBNData =false;
+    
+    @Option(name="-tn", aliases = "--tagNIST", usage="Tags NIST data for language")
+    private static Boolean tagNISTData =false;
 
 
     static Logger log = Logger.getLogger(BabelMain.class);
@@ -169,6 +173,8 @@ public class BabelMain {
 	    System.out.println(args[2]);
 	    System.out.println(args[3]);
             new tagBBN().start(args[1],args[2],args[3]);
+        }else if (tagNISTData == true){
+            new tagNIST().start(args[1],args[2],args[3]);
         }
 
         /**
