@@ -89,7 +89,8 @@ public class tagNIST {
 
     public static HashSet<String> loadAnchors(String langCode) throws Exception {
 	HashSet<String> anchors = new HashSet<String>();
-	String anchorsFilename = "anchors/" + langCode + "_anchors.txt";	
+	String anchorsFilename = "anchors/" + langCode + "_anchors.txt";
+        System.out.println(anchorsFilename);
 	InputStream is =  tagNIST.class.getClassLoader().getResourceAsStream(anchorsFilename);
 	BufferedReader br = new BufferedReader(new InputStreamReader(is));
 	String line = "";
