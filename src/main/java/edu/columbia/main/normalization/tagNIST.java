@@ -132,12 +132,7 @@ public class tagNIST {
             Result res = lp.detectLanguage(untagged_text, langCode);
             output = prefix + " <s> " + processLine(text, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
         } else if (line.matches("[0-9]*\\.?[0-9]+.*")) {
-            System.out.println("2");
-            String[] tokens = line.split(" ", 2);
-            String untagged_text = tokens[1].replaceAll("<.*>", "");
-            Result res = lp.detectLanguage(untagged_text, langCode);
-            
-            output = tokens[0] + " <s> " + processLine(tokens[1], langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
+            output = line;
         }else {
             System.out.println("3");
             String untagged_text = line.replaceAll("<.*>", "");
