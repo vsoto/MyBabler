@@ -56,7 +56,7 @@ public class tagNIST {
 
 	while ((line = br.readLine()) != null) {
             if (line.startsWith("[")) { 
-                bw.write(line); 
+                bw.write(line + "\n"); 
             } else {
 		String outputBlock = outputTranscriptionLine(langCode, line, langAnchors, engAnchors);
 	        bw.write(outputBlock); 
@@ -80,8 +80,10 @@ public class tagNIST {
 	HashSet<String> engAnchors = loadAnchors(langCode, "eng");
 
 	while ((line = br.readLine()) != null) {
-            String outputBlock = outputTaggingLine(langCode, line, langAnchors, engAnchors);
-            bw.write(outputBlock); 
+            if (!line.isEmpty()) {
+                String outputBlock = outputTaggingLine(langCode, line, langAnchors, engAnchors);
+                bw.write(outputBlock); 
+            }
         }
         br.close();
 	bw.close();
@@ -115,9 +117,33 @@ public class tagNIST {
     }
     
     public static String outputTranscriptionLine(String langCode, String line, HashSet<String> langAnchors, HashSet<String> engAnchors) {
-        String untagged_text = line.replaceAll("<.*>", "");
-        Result res = lp.detectLanguage(untagged_text, langCode);
-        String output = "<s> " + processLine(line, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
+        System.out.println("Before");
+        System.out.println(line);
+        Pattern pattern = Pattern.compile("[0-9]*\\.?[0-9]+");
+        String output;
+        if (line.matches("[0-9]*\\.?[0-9]+  [inLine|OutLine]")) {
+            System.out.println("1");
+            int idx = line.indexOf("Line");
+            String prefix = line.substring(0, idx + 4);
+            String text = line.substring(idx + 4);
+            System.out.println(prefix);
+            System.out.println(text);
+            String untagged_text = text.replaceAll("<.*>", "");
+            Result res = lp.detectLanguage(untagged_text, langCode);
+            output = prefix + " <s> " + processLine(text, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
+        } else if (line.matches("[0-9]*\\.?[0-9]+")) {
+            System.out.println("2");
+            String[] tokens = line.split(" ", 2);
+            String untagged_text = tokens[1].replaceAll("<.*>", "");
+            Result res = lp.detectLanguage(untagged_text, langCode);
+            
+            output = tokens[0] + " <s> " + processLine(tokens[1], langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
+        }else {
+            System.out.println("3");
+            String untagged_text = line.replaceAll("<.*>", "");
+            Result res = lp.detectLanguage(untagged_text, langCode);
+            output = "<s> " + processLine(line, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
+        }
         return output;
     }
 
