@@ -121,7 +121,7 @@ public class tagNIST {
         System.out.println(line);
         Pattern pattern = Pattern.compile("[0-9]*\\.?[0-9]+");
         String output;
-        if (line.matches("[0-9]*\\.?[0-9]+  [inLine|OutLine]")) {
+        if (line.matches("^[0-9]*\\.?[0-9]+ [inLine|OutLine].*")) {
             System.out.println("1");
             int idx = line.indexOf("Line");
             String prefix = line.substring(0, idx + 4);
@@ -131,7 +131,7 @@ public class tagNIST {
             String untagged_text = text.replaceAll("<.*>", "");
             Result res = lp.detectLanguage(untagged_text, langCode);
             output = prefix + " <s> " + processLine(text, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
-        } else if (line.matches("[0-9]*\\.?[0-9]+")) {
+        } else if (line.matches("[0-9]*\\.?[0-9]+.*")) {
             System.out.println("2");
             String[] tokens = line.split(" ", 2);
             String untagged_text = tokens[1].replaceAll("<.*>", "");
