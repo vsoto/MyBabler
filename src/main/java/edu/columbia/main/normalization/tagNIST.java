@@ -121,7 +121,7 @@ public class tagNIST {
         System.out.println(line);
         Pattern pattern = Pattern.compile("[0-9]*\\.?[0-9]+");
         String output;
-        if (line.matches("^[0-9]*\\.?[0-9]+ [inLine|OutLine].*")) {
+        if (line.contains("inLine") || line.contains("outLine")) {
             System.out.println("1");
             int idx = line.indexOf("Line");
             String prefix = line.substring(0, idx + 4);
