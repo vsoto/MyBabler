@@ -33,89 +33,92 @@ public class tagNIST {
     static Logger log = Logger.getLogger(tagNIST.class);
     static LanguageDetector lp = new LanguageDetector();
 
-    public static void start(String path, String saveTo, String langCode) throws Exception {
+    public static void start(String dirIn, String dirOut, String langCode) throws Exception {
+        File dir = new File(dirIn);
+        File[] listOfFiles = dir.listFiles();
 
-        if (path.endsWith("transcription.txt")) {
-            processTranscriptionFile(path, saveTo, langCode);
-        } else {
-            processTextFile(path, saveTo, langCode);
-            
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isFile()) {
+                String filename = listOfFiles[i].getName();
+                if (filename.endsWith(".txt")) {
+                    processTextFile(dirIn + "/" + filename, dirOut + "/" + filename, langCode);
+                }
+            }
         }
     }
-    
-    private static void processTranscriptionFile(String path, String saveTo, String langCode) throws Exception {    
+
+    private static void processTranscriptionFile(String path, String saveTo, String langCode) throws Exception {
         File newLangFile = new File(saveTo);
-    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newLangFile), StandardCharsets.UTF_8));
-        
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newLangFile), StandardCharsets.UTF_8));
+
         File contentFile = new File(path);
         BufferedReader br = new BufferedReader(new FileReader(contentFile));
-       
-        String line;
-	HashSet<String> langAnchors = loadAnchors(langCode, langCode);
-	HashSet<String> engAnchors = loadAnchors(langCode, "eng");
 
-	while ((line = br.readLine()) != null) {
-            if (line.startsWith("[")) { 
-                bw.write(line + "\n"); 
+        String line;
+        HashSet<String> langAnchors = loadAnchors(langCode, langCode);
+        HashSet<String> engAnchors = loadAnchors(langCode, "eng");
+
+        while ((line = br.readLine()) != null) {
+            if (line.startsWith("[")) {
+                bw.write(line + "\n");
             } else {
-		String outputBlock = outputTranscriptionLine(langCode, line, langAnchors, engAnchors);
-	        bw.write(outputBlock); 
-	    }
-        }
-        br.close();
-	bw.close();
-    }
-    
-    private static void processTextFile(String path, String saveTo, String langCode) throws Exception {    
-        File newLangFile = new File(saveTo);
-    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newLangFile), StandardCharsets.UTF_8));
-        
-        File contentFile = new File(path);        
-        BufferedReader br = new BufferedReader(new FileReader(contentFile));
-        
-        
-        String line;
-
-	HashSet<String> langAnchors = loadAnchors(langCode, langCode);
-	HashSet<String> engAnchors = loadAnchors(langCode, "eng");
-
-	while ((line = br.readLine()) != null) {
-            if (!line.isEmpty()) {
-                String outputBlock = outputTaggingLine(langCode, line, langAnchors, engAnchors);
-                bw.write(outputBlock); 
+                String outputBlock = outputTranscriptionLine(langCode, line, langAnchors, engAnchors);
+                bw.write(outputBlock);
             }
         }
         br.close();
-	bw.close();
+        bw.close();
+    }
+
+    private static void processTextFile(String path, String saveTo, String langCode) throws Exception {
+        File newLangFile = new File(saveTo);
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newLangFile), StandardCharsets.UTF_8));
+
+        File contentFile = new File(path);
+        BufferedReader br = new BufferedReader(new FileReader(contentFile));
+
+        String line;
+
+        HashSet<String> langAnchors = loadAnchors(langCode, langCode);
+        HashSet<String> engAnchors = loadAnchors(langCode, "eng");
+
+        while ((line = br.readLine()) != null) {
+            if (!line.isEmpty()) {
+                String outputBlock = outputTaggingLine(langCode, line, langAnchors, engAnchors);
+                bw.write(outputBlock);
+            }
+        }
+        br.close();
+        bw.close();
     }
 
     public static HashSet<String> loadAnchors(String primaryLang, String langCode) throws Exception {
-	HashSet<String> anchors = new HashSet<String>();
-	String anchorsFilename = "weak_anchors/" + primaryLang + "/" + langCode +  "_anchors.txt";
+        HashSet<String> anchors = new HashSet<String>();
+        String anchorsFilename = "weak_anchors/" + primaryLang + "/" + langCode + "_anchors.txt";
         System.out.println(anchorsFilename);
-	InputStream is =  tagNIST.class.getClassLoader().getResourceAsStream(anchorsFilename);
-	BufferedReader br = new BufferedReader(new InputStreamReader(is));
-	String line = "";
-	while ((line = br.readLine()) != null) {
-		anchors.add(line);
-	}
-	return anchors;
+        InputStream is = tagNIST.class.getClassLoader().getResourceAsStream(anchorsFilename);
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        String line = "";
+        while ((line = br.readLine()) != null) {
+            anchors.add(line);
+        }
+        return anchors;
     }
 
     public static String outputTaggingLines(String langCode, ArrayList<String> lines, HashSet<String> langAnchors, HashSet<String> engAnchors) {
-	String output = "";
-	for (String line: lines) {
+        String output = "";
+        for (String line : lines) {
             output += outputTaggingLine(langCode, line, langAnchors, engAnchors);
-	}
-	return output;
+        }
+        return output;
     }
-    
+
     public static String outputTaggingLine(String langCode, String line, HashSet<String> langAnchors, HashSet<String> engAnchors) {
         Result res = lp.detectLanguage(line, langCode);
-        String output = "<s> " + processLine(line, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
-	return output;
+        String output = "<s> " + processLine(line, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode", res.languageCode) + makeAttribute("score", String.valueOf(res.confidence))) + " > \n";
+        return output;
     }
-    
+
     public static String outputTranscriptionLine(String langCode, String line, HashSet<String> langAnchors, HashSet<String> engAnchors) {
         System.out.println("Before");
         System.out.println(line);
@@ -127,35 +130,34 @@ public class tagNIST {
             String text = line.substring(idx + 4);
             String untagged_text = text.replaceAll("<.*>", "");
             Result res = lp.detectLanguage(untagged_text, langCode);
-            output = prefix + " <s> " + processLine(text, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
+            output = prefix + " <s> " + processLine(text, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode", res.languageCode) + makeAttribute("score", String.valueOf(res.confidence))) + " > \n";
         } else if (line.matches("[0-9]*\\.?[0-9]+.*")) {
             output = line + "\n";
-        }else {
+        } else {
             String untagged_text = line.replaceAll("<.*>", "");
             Result res = lp.detectLanguage(untagged_text, langCode);
-            output = "<s> " + processLine(line, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
+            output = "<s> " + processLine(line, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode", res.languageCode) + makeAttribute("score", String.valueOf(res.confidence))) + " > \n";
         }
         return output;
     }
 
     public static String processLine(String line, String langCode, HashSet<String> langAnchors, HashSet<String> engAnchors) {
-	String[] tokens = line.split(" ");
-	String newLine = "";
-	for (String token: tokens) {
-		if (langAnchors.contains(token)) {
-			newLine += "<" + token + ":" + langCode + "> ";
-		} else if (engAnchors.contains(token)) {
-			newLine += "<" + token + ":eng> ";
-		}
-		else {
-			newLine += token + " ";
-		}
-	}
-	return newLine;
+        String[] tokens = line.split(" ");
+        String newLine = "";
+        for (String token : tokens) {
+            token = token.toLowerCase();
+            if (langAnchors.contains(token)) {
+                newLine += "<" + token + ":" + langCode + "> ";
+            } else if (engAnchors.contains(token)) {
+                newLine += "<" + token + ":eng> ";
+            } else {
+                newLine += token + " ";
+            }
+        }
+        return newLine;
     }
 
-
-    public static int countWords(String s){
+    public static int countWords(String s) {
         int wordCount = 0;
         boolean word = false;
         int endOfLine = s.length() - 1;
@@ -177,10 +179,9 @@ public class tagNIST {
         }
         return wordCount;
     }
-    
-    private static String makeAttribute(String att, String value){
-        return att+"=\""+value+"\" ";
+
+    private static String makeAttribute(String att, String value) {
+        return att + "=\"" + value + "\" ";
     }
 
 }
-

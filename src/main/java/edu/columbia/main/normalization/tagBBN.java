@@ -35,86 +35,83 @@ public class tagBBN {
     public static void start(String path, String saveTo, String langCode) throws Exception {
 
         File newLangFile = new File(saveTo);
-    	BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newLangFile), StandardCharsets.UTF_8));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newLangFile), StandardCharsets.UTF_8));
         File contentFile = new File(path);
-        
-	String patternString = "<doc id=\"(.*)\">";
-	Pattern pattern = Pattern.compile(patternString);
+
+        String patternString = "<doc id=\"(.*)\">";
+        Pattern pattern = Pattern.compile(patternString);
 
         log.info("LP LOADED");
         BufferedReader br = new BufferedReader(new FileReader(contentFile));
         String line = "", docId = "";
-	ArrayList<String> lines = new ArrayList<String>();
+        ArrayList<String> lines = new ArrayList<String>();
 
-	HashSet<String> langAnchors = loadAnchors(langCode);
-	HashSet<String> engAnchors = loadAnchors("eng");
+        HashSet<String> langAnchors = loadAnchors(langCode);
+        HashSet<String> engAnchors = loadAnchors("eng");
 
-	while ((line = br.readLine()) != null) {
-	    Matcher matcher = pattern.matcher(line);
-	    if (matcher.find()) {
-		docId = matcher.group(1);
-	    }
-	    else if (line.equals("</doc>")) {
-		String outputBlock = outputTagging(langCode, docId, lines, langAnchors, engAnchors);
-	        bw.write(outputBlock); 
-		docId = "";
-		lines = new ArrayList<String>();
-	    }
-	    else {
-		lines.add(line);
-	    }
+        while ((line = br.readLine()) != null) {
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.find()) {
+                docId = matcher.group(1);
+            } else if (line.equals("</doc>")) {
+                String outputBlock = outputTagging(langCode, docId, lines, langAnchors, engAnchors);
+                bw.write(outputBlock);
+                docId = "";
+                lines = new ArrayList<String>();
+            } else {
+                lines.add(line);
+            }
         }
         br.close();
-	bw.close();
+        bw.close();
     }
 
     public static HashSet<String> loadAnchors(String langCode) throws Exception {
-	HashSet<String> anchors = new HashSet<String>();
-	String anchorsFilename = "anchors/" + langCode + "_anchors.txt";	
-	InputStream is =  tagBBN.class.getClassLoader().getResourceAsStream(anchorsFilename);
-	BufferedReader br = new BufferedReader(new InputStreamReader(is));
-	String line = "";
-	while ((line = br.readLine()) != null) {
-		anchors.add(line);
-	}
-	return anchors;
+        HashSet<String> anchors = new HashSet<String>();
+        String anchorsFilename = "anchors/" + langCode + "_anchors.txt";
+        InputStream is = tagBBN.class.getClassLoader().getResourceAsStream(anchorsFilename);
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        String line = "";
+        while ((line = br.readLine()) != null) {
+            anchors.add(line);
+        }
+        return anchors;
     }
 
     public static String outputTagging(String langCode, String docId, ArrayList<String> lines, HashSet<String> langAnchors, HashSet<String> engAnchors) {
-	String output = "";
-	String docString = "";
-	for (String line: lines) {
-       		String untagged_text = line.replaceAll("<s>", "").replaceAll("</s.*>", "");
-		String clean_text = untagged_text.replaceAll("<NUM.*>", "");
-		Result res = lp.detectLanguage(clean_text, langCode);
-		output += "<s> " + processLine(untagged_text, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence)))+" > \n";
-		
-		docString += clean_text + "\n";
-	}
-	Result res = lp.detectLanguage(docString, langCode);
-	String header = "<doc " + (makeAttribute("id", docId) + makeAttribute("engine", res.engine) + makeAttribute("languageCode",res.languageCode) + makeAttribute("score", String.valueOf(res.confidence))) + " >\n";
-	String tail = "</doc>\n";
-	return header + output + tail;
+        String output = "";
+        String docString = "";
+        for (String line : lines) {
+            String untagged_text = line.replaceAll("<s>", "").replaceAll("</s.*>", "");
+            String clean_text = untagged_text.replaceAll("<NUM.*>", "");
+            Result res = lp.detectLanguage(clean_text, langCode);
+            output += "<s> " + processLine(untagged_text, langCode, langAnchors, engAnchors) + " </s " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode", res.languageCode) + makeAttribute("score", String.valueOf(res.confidence))) + " > \n";
+
+            docString += clean_text + "\n";
+        }
+        Result res = lp.detectLanguage(docString, langCode);
+        String header = "<doc " + (makeAttribute("id", docId) + makeAttribute("engine", res.engine) + makeAttribute("languageCode", res.languageCode) + makeAttribute("score", String.valueOf(res.confidence))) + " >\n";
+        String tail = "</doc>\n";
+        return header + output + tail;
     }
 
     public static String processLine(String line, String langCode, HashSet<String> langAnchors, HashSet<String> engAnchors) {
-	String[] tokens = line.split(" ");
-	String newLine = "";
-	for (String token: tokens) {
-		if (langAnchors.contains(token)) {
-			newLine += "<" + token + ":" + langCode + "> ";
-		} else if (engAnchors.contains(token)) {
-			newLine += "<" + token + ":eng> ";
-		}
-		else {
-			newLine += token + " ";
-		}
-	}
-	return newLine;
+        String[] tokens = line.split(" ");
+        String newLine = "";
+        for (String token : tokens) {
+            token = token.toLowerCase();
+            if (langAnchors.contains(token)) {
+                newLine += "<" + token + ":" + langCode + "> ";
+            } else if (engAnchors.contains(token)) {
+                newLine += "<" + token + ":eng> ";
+            } else {
+                newLine += token + " ";
+            }
+        }
+        return newLine;
     }
 
-
-    public static int countWords(String s){
+    public static int countWords(String s) {
 
         int wordCount = 0;
 
@@ -140,48 +137,47 @@ public class tagBBN {
     }
 
     /*
-    public static void main(String[] args) throws Exception {
+     public static void main(String[] args) throws Exception {
 
-        String path = "/local2/babel/data/columbia-data/normalized/12152014/";
-        File dir = new File(path);
-        lingpipe ld = new lingpipe();
+     String path = "/local2/babel/data/columbia-data/normalized/12152014/";
+     File dir = new File(path);
+     lingpipe ld = new lingpipe();
 
-        for(File langFile : dir.listFiles()){
-            File newLangFile = new File("/Users/Gideon/Documents/dev/Babel/bbn/12152014/tagged/"+langFile.getName());
-            int langCode = Integer.parseInt(langFile.getName().substring(0,3));
+     for(File langFile : dir.listFiles()){
+     File newLangFile = new File("/Users/Gideon/Documents/dev/Babel/bbn/12152014/tagged/"+langFile.getName());
+     int langCode = Integer.parseInt(langFile.getName().substring(0,3));
 
-            BufferedReader br = new BufferedReader(new FileReader(langFile));
-            String line;
-            while ((line = br.readLine()) != null) {
+     BufferedReader br = new BufferedReader(new FileReader(langFile));
+     String line;
+     while ((line = br.readLine()) != null) {
 
-                String text = line.replaceAll("<s>","").replaceAll("</s>","");
+     String text = line.replaceAll("<s>","").replaceAll("</s>","");
 
-                Result res;
-                String engine;
-                if(langCode < 302) { //Kurmanji,TokPisin,Cebuano
-                    //res = ld.detectLanguage(text.replaceAll("<NUM>",""));
-                    //engine = "lingPipe";
-                    break;
-                }
-                else{ //Kazakh, Lithuaninan, Telugu
-                    res = CLDLanguaeDetector.detect(text.replaceAll("<NUM>",""));
-                    engine = "cld";
-                }
+     Result res;
+     String engine;
+     if(langCode < 302) { //Kurmanji,TokPisin,Cebuano
+     //res = ld.detectLanguage(text.replaceAll("<NUM>",""));
+     //engine = "lingPipe";
+     break;
+     }
+     else{ //Kazakh, Lithuaninan, Telugu
+     res = CLDLanguaeDetector.detect(text.replaceAll("<NUM>",""));
+     engine = "cld";
+     }
 
-                text = "<s>"+text+"</s "+makeAttribute("engine",engine)+makeAttribute("languageCode",res.languageCode)+makeAttribute("isReliable", String.valueOf(res.isReliable)) + makeAttribute("score", String.valueOf(res.confidence))+" >";
-                FileUtils.writeStringToFile(newLangFile,text, Strings.UTF8,true);
+     text = "<s>"+text+"</s "+makeAttribute("engine",engine)+makeAttribute("languageCode",res.languageCode)+makeAttribute("isReliable", String.valueOf(res.isReliable)) + makeAttribute("score", String.valueOf(res.confidence))+" >";
+     FileUtils.writeStringToFile(newLangFile,text, Strings.UTF8,true);
 
-            }
-            br.close();
-        }
+     }
+     br.close();
+     }
 
-    }
-*/
-    private static String makeAttribute(String att, String value){
+     }
+     */
+    private static String makeAttribute(String att, String value) {
 
-        return att+"=\""+value+"\" ";
+        return att + "=\"" + value + "\" ";
 
     }
 
 }
-
