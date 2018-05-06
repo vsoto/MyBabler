@@ -40,6 +40,7 @@ public class tagNIST {
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile()) {
                 String filename = listOfFiles[i].getName();
+                System.out.println(filename);
                 if (filename.endsWith(".txt")) {
                     processTextFile(dirIn + "/" + filename, dirOut + "/" + filename, langCode);
                 }
@@ -71,6 +72,8 @@ public class tagNIST {
     }
 
     private static void processTextFile(String path, String saveTo, String langCode) throws Exception {
+        System.out.println(path);
+        System.out.println(saveTo);
         File newLangFile = new File(saveTo);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newLangFile), StandardCharsets.UTF_8));
 
