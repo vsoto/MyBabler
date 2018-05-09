@@ -85,12 +85,18 @@ public class tagNIST {
         HashSet<String> langAnchors = loadAnchors(langCode, langCode);
         HashSet<String> engAnchors = loadAnchors(langCode, "eng");
 
+        String outputBlock = "";
+        String text = "";
         while ((line = br.readLine()) != null) {
             if (!line.isEmpty()) {
-                String outputBlock = outputTaggingLine(langCode, line, langAnchors, engAnchors);
-                bw.write(outputBlock);
+                text += line + "\n";
+                outputBlock += outputTaggingLine(langCode, line, langAnchors, engAnchors);
             }
         }
+        bw.write(outputTaggingDoc(langCode, text,langAnchors, engAnchors));
+        bw.write(outputBlock);
+        bw.write(outputEndDoc());
+        
         br.close();
         bw.close();
     }
@@ -122,6 +128,16 @@ public class tagNIST {
         return output;
     }
 
+    public static String outputTaggingDoc(String langCode, String doc, HashSet<String> langAnchors, HashSet<String> engAnchors) {
+        Result res = lp.detectLanguage(doc, langCode);
+        String output = "<doc " + (makeAttribute("engine", res.engine) + makeAttribute("languageCode", res.languageCode) + makeAttribute("score", String.valueOf(res.confidence))) + " > \n";
+        return output;
+    }
+    
+    public static String outputEndDoc() {
+        return "</doc>\n";
+    }
+    
     public static String outputTranscriptionLine(String langCode, String line, HashSet<String> langAnchors, HashSet<String> engAnchors) {
         System.out.println("Before");
         System.out.println(line);
