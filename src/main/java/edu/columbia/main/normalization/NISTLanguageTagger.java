@@ -72,8 +72,6 @@ public class NISTLanguageTagger {
     }
 
     private static void processTextFile(String path, String saveTo, String langCode) throws Exception {
-        System.out.println(path);
-        System.out.println(saveTo);
         File newLangFile = new File(saveTo);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newLangFile), StandardCharsets.UTF_8));
 
@@ -104,7 +102,6 @@ public class NISTLanguageTagger {
     public static HashSet<String> loadAnchors(String primaryLang, String langCode) throws Exception {
         HashSet<String> anchors = new HashSet<String>();
         String anchorsFilename = "weak_anchors/" + primaryLang + "/" + langCode + "_anchors.txt";
-        System.out.println(anchorsFilename);
         InputStream is = NISTLanguageTagger.class.getClassLoader().getResourceAsStream(anchorsFilename);
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         String line = "";
@@ -139,8 +136,6 @@ public class NISTLanguageTagger {
     }
     
     public static String outputTranscriptionLine(String langCode, String line, HashSet<String> langAnchors, HashSet<String> engAnchors) {
-        System.out.println("Before");
-        System.out.println(line);
         Pattern pattern = Pattern.compile("[0-9]*\\.?[0-9]+");
         String output;
         if (line.contains("inLine") || line.contains("outLine")) {
@@ -204,9 +199,6 @@ public class NISTLanguageTagger {
     }
     
     public static void main(String[] args) throws Exception {
-        System.out.println(args[0]);
-        System.out.println(args[1]);
-        System.out.println(args[2]);
         start(args[0], args[1], args[2]);
   }
 
