@@ -21,7 +21,7 @@ public class Utils {
         log.info(strDate + " | " + str );
     }
 
-    public static String removePuntuation(String s)
+    public static String removePunctuation(String s)
     {
          StringBuilder sb = new StringBuilder();
          char[] punc = "',.;!?(){}[]<>%@#$%^&*".toCharArray();
