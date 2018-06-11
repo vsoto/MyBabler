@@ -23,7 +23,7 @@ import java.util.Set;
  *
  */
 public class InitialDocumentCountRetriever {
-    private static Logger log = Logger.getLogger(FileOpener.class);
+    private static final Logger log = Logger.getLogger(FileOpener.class);
     private final static int max_ngram_order_ = 4;
 
     public static void start(String pathBuildTranscripts, String pathRankingFile) {
@@ -57,9 +57,9 @@ public class InitialDocumentCountRetriever {
         }
         log.info("# processed documents: " + numDocuments);
         log.info("Max n-gram order extracted: " + max_ngram_order_);
-        log.info("Vocabulary size (1-gram): " + vocabulary.size());
+        log.info("Vocabulary size (1-gram to " + max_ngram_order_ + "-gram: " + vocabulary.size());
 
-        log.info("Rescoring...");
+        log.info("Computing ranking...");
         // Compute DF(t)
         HashMap<String, Double> scores = new HashMap<>();
         for (String term : vocabulary) {
@@ -94,7 +94,7 @@ public class InitialDocumentCountRetriever {
     }
 
     public static ArrayList<String> getHighestRankedNGrams(String pathRankingFile, int max_entries) {
-        ArrayList<String> entries = new ArrayList<String>();
+        ArrayList<String> entries = new ArrayList<>();
         try {
             File file = new File(pathRankingFile);
             FileReader fileReader = new FileReader(file);
@@ -145,7 +145,7 @@ public class InitialDocumentCountRetriever {
     }
 
     private static HashSet<String> getLineNGrams(ArrayList<String> tokens, int max_ngram) {
-        HashSet<String> ngrams = new HashSet<String>();
+        HashSet<String> ngrams = new HashSet<>();
         for (int i = 0; i < tokens.size(); ++i) {
             String aux_ngram = tokens.get(i);
             ngrams.add(aux_ngram);

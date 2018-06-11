@@ -1,6 +1,5 @@
 package edu.columbia.main.bing.bbn_scraper;
 
-import edu.columbia.main.InitialDocumentCountRetriever;
 import edu.columbia.main.LanguageDataManager;
 import edu.columbia.main.LogDB;
 import edu.columbia.main.configuration.BabelConfig;
@@ -12,16 +11,6 @@ import java.net.*;
 import java.util.*;
 import java.io.*;
 import javax.net.ssl.HttpsURLConnection;
-
-import java.net.URI;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.apache.http.entity.StringEntity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
