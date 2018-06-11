@@ -171,7 +171,7 @@ public class LanguageDetector {
         }
 
         else{
-            return new Result(tc.categorize(Utils.removePuntuation(text)), true, 2);
+            return new Result(tc.categorize(Utils.removePunctuation(text)), true, 2);
         }
 
         return null;
