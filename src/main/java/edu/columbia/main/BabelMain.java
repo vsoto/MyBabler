@@ -117,7 +117,6 @@ public class BabelMain {
             // parse the arguments.
             parser.parseArgument(args);}
         catch(CmdLineException e ) {
-
             log.error(e.getMessage());
         }
 

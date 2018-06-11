@@ -3,12 +3,9 @@ package edu.columbia.main.bing.bbn_scraper;
 import edu.columbia.main.*;
 import edu.columbia.main.HashMapSorting;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.BufferedWriter;
@@ -19,8 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Set;
 
 /**
@@ -28,23 +23,18 @@ import java.util.Set;
  *
  */
 public class InitialDocumentCountRetriever {
+    private static Logger log = Logger.getLogger(FileOpener.class);
+    private final static int max_ngram_order_ = 4;
 
-    public String path;
-    Logger log = Logger.getLogger(FileOpener.class);
-
-    /**
-     ** opens a file
-     *
-     ** @param path location of file
-     *
-     */
     public static void start(String pathBuildTranscripts, String pathRankingFile) {
         File folder = new File(pathBuildTranscripts);
         File[] listOfFiles = folder.listFiles();
 
-        HashSet<String> vocabulary = new HashSet<String>();
-        HashMap<String, Integer> document_counts = new HashMap<String, Integer>();
+        HashSet<String> vocabulary = new HashSet<>();
+        HashMap<String, Integer> document_counts = new HashMap<>();
 
+        log.info("Input directory: " + pathBuildTranscripts);
+        log.info("# documents: " + listOfFiles.length);
         int numDocuments = 0;
         // Read every file and update vocabulary and document counts
         for (int i = 0; i < listOfFiles.length; i++) {
@@ -52,7 +42,7 @@ public class InitialDocumentCountRetriever {
                 numDocuments++;
 
                 String filename = pathBuildTranscripts + "/" + listOfFiles[i].getName();
-                HashSet<String> document_vocabulary = getDocumentNGrams(filename, 4);
+                HashSet<String> document_vocabulary = getDocumentNGrams(filename, max_ngram_order_);
                 // Update vocabulary
                 vocabulary.addAll(document_vocabulary);
                 // Update document counts for DF(t)
@@ -65,10 +55,13 @@ public class InitialDocumentCountRetriever {
                 }
             }
         }
-        System.out.println("Vocabulary size: " + vocabulary.size());
+        log.info("# processed documents: " + numDocuments);
+        log.info("Max n-gram order extracted: " + max_ngram_order_);
+        log.info("Vocabulary size (1-gram): " + vocabulary.size());
 
+        log.info("Rescoring...");
         // Compute DF(t)
-        HashMap<String, Double> scores = new HashMap<String, Double>();
+        HashMap<String, Double> scores = new HashMap<>();
         for (String term : vocabulary) {
             Double df = document_counts.get(term) * 1.0;
             Double p0 = term.length() * term.length() * 0.0025;
@@ -78,9 +71,8 @@ public class InitialDocumentCountRetriever {
             scores.put(term, df * p0);
         }
 
-        HashMapSorting hms = new HashMapSorting();
-        Set<Entry<String, Double>> sorted_entries = hms.sort(scores);
-
+        log.info("Outputting ranked terms to " + pathRankingFile);
+        Set<Entry<String, Double>> sorted_entries = HashMapSorting.sort(scores);
         writeToFile(pathRankingFile, sorted_entries);
 
     }
