@@ -34,14 +34,13 @@ public class BBNSearchProducer extends BabelProducer {
     // search APIs.  In the future, regional endpoints may be available.  If you
     // encounter unexpected authorization errors, double-check this value against
     // the endpoint for your Bing Web search instance in your Azure dashboard.
-    static String subscriptionKey = "7112e369e3ad4d3aa00c2db08664f8f7";
+    static String subscriptionKey; // = "7112e369e3ad4d3aa00c2db08664f8f7";
     static String host = "https://api.cognitive.microsoft.com";
     static String path = "/bing/v7.0/search";
 
     static AtomicInteger numOfRequests;
     Logger log = Logger.getLogger(BBNSearchProducer.class);
-    int ngram = BabelConfig.getInstance().getConfigFromFile().ngram();
-
+    
     public BBNSearchProducer(BabelBroker broker, String language, String ranked_ngrams_filename) {
         this.broker = broker;
         this.lang = language;
@@ -54,6 +53,7 @@ public class BBNSearchProducer extends BabelProducer {
     private static SearchResults SearchWeb(String searchQuery, String count, String offset) throws Exception {
         URL url = new URL(host + path + "?q=" + URLEncoder.encode(searchQuery, "UTF-8") + "&count=" + count + "&offset=" + offset);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
         connection.setRequestProperty("Ocp-Apim-Subscription-Key", subscriptionKey);
 
         // receive JSON body
