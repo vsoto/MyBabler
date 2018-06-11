@@ -23,7 +23,7 @@ import java.util.Set;
  *
  */
 public class RefinedDocumentCountRetriever {
-    private static final Logger log = Logger.getLogger(FileOpener.class);
+    private static final Logger log = Logger.getLogger(RefinedDocumentCountRetriever.class);
     private static final int num_top_terms_ = 4;
 
     public static void start(String pathBuildTranscripts, String initialRankingFile, String refinedRankingFile) {

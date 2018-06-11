@@ -23,7 +23,7 @@ import java.util.Set;
  *
  */
 public class InitialDocumentCountRetriever {
-    private static final Logger log = Logger.getLogger(FileOpener.class);
+    private static final Logger log = Logger.getLogger(InitialDocumentCountRetriever.class);
     private final static int max_ngram_order_ = 4;
 
     public static void start(String pathBuildTranscripts, String pathRankingFile) {

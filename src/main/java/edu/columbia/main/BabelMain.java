@@ -16,7 +16,6 @@ import edu.columbia.main.language_id.cld.*;
 import edu.columbia.main.language_id.lingpipe.*;
 import edu.columbia.main.language_id.textcat.*;
 import edu.columbia.main.normalization.tagBBN;
-import edu.columbia.main.normalization.tagNIST;
 import edu.columbia.main.twitter.TwitterCodeSwitchSJobManager;
 import edu.columbia.main.twitter.TwitterJobManager;
 import edu.columbia.main.twitter.TwitterJobManagerUser;
