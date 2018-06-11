@@ -159,10 +159,10 @@ public class BabelMain {
         }
 
 	if (initBBNScraping == true) {
-		new InitialDocumentCountRetriever().start(args[1], args[2]);
+		InitialDocumentCountRetriever.start(args[1], args[2]);
 	}
         else if (refineBBNScraping == true) {
-		new RefinedDocumentCountRetriever().start(args[1], args[2], args[3]);
+		RefinedDocumentCountRetriever.start(args[1], args[2], args[3]);
 	}
 	else if (module.equals("bbn")) {
 		System.out.println("Starting BBN-style scraper");
