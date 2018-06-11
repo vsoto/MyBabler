@@ -39,7 +39,7 @@ public class BBNSearchProducer extends BabelProducer {
     static String path = "/bing/v7.0/search";
 
     static AtomicInteger numOfRequests;
-    Logger log = Logger.getLogger(BBNSearchProducer.class);
+    static private final Logger log = Logger.getLogger(BBNSearchProducer.class);
     
     public BBNSearchProducer(BabelBroker broker, String language, String ranked_ngrams_filename) {
         this.broker = broker;
@@ -54,6 +54,7 @@ public class BBNSearchProducer extends BabelProducer {
         URL url = new URL(host + path + "?q=" + URLEncoder.encode(searchQuery, "UTF-8") + "&count=" + count + "&offset=" + offset);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
+        log.info("Subscription key: " + subscriptionKey);
         connection.setRequestProperty("Ocp-Apim-Subscription-Key", subscriptionKey);
 
         // receive JSON body
