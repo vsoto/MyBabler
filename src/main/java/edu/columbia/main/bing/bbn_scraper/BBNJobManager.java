@@ -38,15 +38,16 @@ public class BBNJobManager extends BabelScraper {
 
     Logger log = Logger.getLogger(BBNJobManager.class);
 
-    public void run(){
+    public void run(String ranked_ngrams_file){
 
         BBNBroker broker = new BBNBroker();
         LanguageDetector lp = new LanguageDetector();
         HttpClient httpClient = new MTHttpClient().getClient();
         String lang = LanguageDataManager.getLanguage();
         String[] langs = new String[]{lang};
-	String ranked_ngrams_file = LanguageDataManager.getRankedNGramFile();
+        log.info(ranked_ngrams_file);
         String[] ranked_ngrams_files = new String[]{ranked_ngrams_file};
+        log.info(ranked_ngrams_files);
         ViewManager viewManager = new ViewManager(langs);
 
 
@@ -63,7 +64,7 @@ public class BBNJobManager extends BabelScraper {
 
         //initiate consumers
         for(int i = 0 ; i < NUM_OF_CONSUMERS; i++){
-            consumers.execute(new BBNFetcherAndSaver(broker, lp,i, httpClient, viewManager));
+            consumers.execute(new BBNFetcherAndSaver(broker, lp, i, httpClient, viewManager));
         }
 
 
