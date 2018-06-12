@@ -86,6 +86,15 @@ public class BabelMain {
 
     @Option(name="-wl", aliases = "--wordlist", usage="Path to specialized word list")
     private static String wordList;
+    
+    @Option(name="-ts", aliases = "--train_set", usage="Path to training set")
+    private static String trainSet;
+    
+    @Option(name="-rl", aliases = "--ranked_list", usage="Path to initial list of ranked terms")
+    private static String rankedList;
+    
+    @Option(name="-rrl", aliases = "--rescored_ranked_list", usage="Path to refined list of ranked terms")
+    private static String rescoredRankedList;
 
     @Option(name="-ng", aliases = "--ngram", usage="Sets choice of which ngram model to run (1-unigram, 2-bigram, 3-trigram")
     private static int ngram = BabelConfig.getInstance().getConfigFromFile().ngram();
@@ -153,10 +162,10 @@ public class BabelMain {
         }
 
 	if (initBBNScraping == true) {
-		InitialDocumentCountRetriever.start(args[1], args[2]);
+		InitialDocumentCountRetriever.start(trainSet, rankedList);
 	}
         else if (refineBBNScraping == true) {
-		RefinedDocumentCountRetriever.start(args[1], args[2], args[3]);
+		RefinedDocumentCountRetriever.start(trainSet, rankedList, rescoredRankedList);
 	}
 	else if (module.equals("bbn")) {
 		System.out.println("Starting BBN-style scraper");
