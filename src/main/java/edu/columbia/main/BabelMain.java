@@ -168,8 +168,8 @@ public class BabelMain {
 		RefinedDocumentCountRetriever.start(trainSet, rankedList, rescoredRankedList);
 	}
 	else if (module.equals("bbn")) {
-		System.out.println("Starting BBN-style scraper");
-		new BBNJobManager().run();
+		log.info("Starting BBN-style scraper");
+		new BBNJobManager().run(rescoredRankedList);
 	}
         else if (tagBBNData == true){
 	    System.out.println(args[1]);
