@@ -15,7 +15,9 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Map;
 
 /**
  * Created by Gideon on 7/31/15.
@@ -55,7 +57,7 @@ public enum LanguageDataManager {
     public static ArrayList<String> getMostCommonWords(String lang, int n, int ngram) {
 
         String path = BabelConfig.getInstance().getPathToWordsList();
-        ArrayList<String> seedQueries = null;
+        ArrayList<String> seedQueries;
 
         if(path != null){
             seedQueries = readFile(path);
@@ -94,7 +96,7 @@ public enum LanguageDataManager {
      */
     public static ArrayList<String> getMostCommonWordsFromFile(InputStream f, int n) {
 
-        ArrayList<String> words = new ArrayList<String>();
+        ArrayList<String> words = new ArrayList<>();
         BufferedReader br = new BufferedReader(new InputStreamReader(f, StandardCharsets.UTF_8));
         int counter = 0;
         String line;
@@ -116,6 +118,7 @@ public enum LanguageDataManager {
         }
 
         // Note: this comparator imposes orderings that are inconsistent with equals.
+        @Override
         public int compare(String a, String b) {
             if (base.get(a) >= base.get(b)) {
                 return -1;
