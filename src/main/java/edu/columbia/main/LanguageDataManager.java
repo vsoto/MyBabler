@@ -14,13 +14,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 /**
  * Created by Gideon on 7/31/15.
@@ -47,7 +42,7 @@ public enum LanguageDataManager {
             //read the words from the path
             ArrayList<String> lst = null;
             try {
-                lst = (ArrayList) FileUtils.readLines(fw,"UTF-8");
+                lst = (ArrayList) FileUtils.readLines(fw, "UTF-8");
             } catch (IOException e) {
                 log.debug(e);
             }
@@ -130,25 +125,12 @@ public enum LanguageDataManager {
         }
     }
 
-
     public static String[] getLanguages() {
         return BabelConfig.getInstance().getListOfLanguages();
-    }
-
-    public static String[] getRankedNGramFiles() {
-    	return BabelConfig.getInstance().getListOfRankedNGramFiles();
-        //BabelConfig.getInstance().getConfigFromFile().rankedNGramFile()
     }
     
     public static String getLanguage() {
         System.out.println("Language is " + BabelConfig.getInstance().getConfigFromFile().lang());
         return BabelConfig.getInstance().getConfigFromFile().lang();
     }
-
-    public static String getRankedNGramFile() {
-        System.out.println("NGram file is " + BabelConfig.getInstance().getConfigFromFile().rankedNGramFile());
-        return BabelConfig.getInstance().getConfigFromFile().rankedNGramFile();
-    }
-    
-
 }
