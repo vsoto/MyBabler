@@ -150,7 +150,8 @@ public class BBNSearchProducer extends BabelProducer {
         int document_freq = 0;
         double unigram_score = 0.0;
         int total_num_tokens = 0;
-
+        int count_processed_docs = 0;
+        
         String searchQuery = "\"" + term + "\"" + " NOT lang:en";
 
         try {
@@ -160,13 +161,14 @@ public class BBNSearchProducer extends BabelProducer {
             document_freq = getTotalEstimatedMatches(result.jsonResponse);
 
             for (String url : urls) {
-                //try {
+                try {
                     SimpleEntry<Double, Integer> r = SoupScraper.fetchAndCount(url, unigram_freq);
                     unigram_score += r.getKey();
                     total_num_tokens += r.getValue();
-                //} catch (Exception e) {
-                //    log.error(e);
-                //}
+                    count_processed_docs++;
+                } catch (Exception e) {
+                    log.error(e);
+                }
             }
 
         } catch (Exception e) {
@@ -174,7 +176,7 @@ public class BBNSearchProducer extends BabelProducer {
             System.exit(1);
         }
         double web_precision = unigram_score * 1.0 / total_num_tokens;
-        log.info(term + "\t" + document_freq + "\t" + unigram_score + "\t" + total_num_tokens + "\t" + web_precision);
+        log.info(term + "\t" + count_processed_docs + "\t" + document_freq + "\t" + unigram_score + "\t" + total_num_tokens + "\t" + web_precision);
         SearchStats st = new SearchStats(document_freq, web_precision);
         return st;
     }
