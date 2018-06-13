@@ -54,7 +54,6 @@ public class BBNSearchProducer extends BabelProducer {
         URL url = new URL(host + path + "?q=" + URLEncoder.encode(searchQuery, "UTF-8") + "&count=" + count + "&offset=" + offset);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
-        log.info("Subscription key: " + subscriptionKey);
         connection.setRequestProperty("Ocp-Apim-Subscription-Key", subscriptionKey);
 
         // receive JSON body
@@ -109,7 +108,7 @@ public class BBNSearchProducer extends BabelProducer {
 
         if (json.has("webPages")) {
             JsonObject webPages = json.getAsJsonObject("webPages");
-            System.out.println(webPages.getAsJsonPrimitive("totalEstimatedMatches").getAsInt());
+            log.info(webPages.getAsJsonPrimitive("totalEstimatedMatches").getAsInt());
             return webPages.getAsJsonPrimitive("totalEstimatedMatches").getAsInt();
         }
         return 0;
@@ -148,12 +147,12 @@ public class BBNSearchProducer extends BabelProducer {
         }
     }
 
-    protected static SearchStats searchWordAndRetrieveStats(String ngram, HashMap<String, Double> unigram_freq) {
+    protected static SearchStats searchWordAndRetrieveStats(String term, HashMap<String, Double> unigram_freq) {
         int document_freq = 0;
         double unigram_score = 0.0;
         int total_num_tokens = 0;
 
-        String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
+        String searchQuery = "\"" + term + "\"" + " NOT lang:en";
 
         try {
 
@@ -167,16 +166,16 @@ public class BBNSearchProducer extends BabelProducer {
                     unigram_score += r.getKey();
                     total_num_tokens += r.getValue();
                 } catch (Exception e) {
-                    System.out.println(e);
+                    log.error(e);
                 }
             }
 
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            log.error(e);
             System.exit(1);
         }
         double web_precision = unigram_score * 1.0 / total_num_tokens;
-        System.out.println(ngram + "\t" + document_freq + "\t" + unigram_score + "\t" + total_num_tokens + "\t" + web_precision);
+        log.info(term + "\t" + document_freq + "\t" + unigram_score + "\t" + total_num_tokens + "\t" + web_precision);
         SearchStats st = new SearchStats(document_freq, web_precision);
         return st;
     }

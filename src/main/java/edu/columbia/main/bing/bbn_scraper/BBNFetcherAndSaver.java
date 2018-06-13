@@ -22,8 +22,10 @@ import java.util.AbstractMap;
 public class BBNFetcherAndSaver extends BabelConsumer implements Runnable{
 
     HttpClient httpClient;
-    Logger log = Logger.getLogger(BBNFetcherAndSaver.class);
     ViewManager viewManager;
+    
+    private static final Logger log = Logger.getLogger(BBNFetcherAndSaver.class);
+    
     public BBNFetcherAndSaver(BBNBroker broker, LanguageDetector languageDetector, int i, HttpClient httpClient, ViewManager viewManager) {
         super(broker, languageDetector, i, null);
         this.httpClient = httpClient;
@@ -36,7 +38,7 @@ public class BBNFetcherAndSaver extends BabelConsumer implements Runnable{
     @Override
     public void run() {
         Thread.currentThread().setName("Parser " + i);
-        BBNJob data = null;
+        BBNJob data;
         try {
             while (true){
                 data = (BBNJob) broker.get();

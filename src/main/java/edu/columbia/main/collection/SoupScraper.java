@@ -87,6 +87,7 @@ public class SoupScraper {
             }
             count_tokens++;
         }
-        return new SimpleEntry<Double, Integer>(web_precision, count_tokens);
+        log.info("[SUMMARY] " + url + " web_prec=" + web_precision + " count_tokens=" + count_tokens);
+        return new SimpleEntry<>(web_precision, count_tokens);
     }
 }

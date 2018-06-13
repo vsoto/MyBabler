@@ -59,7 +59,7 @@ public class RefinedDocumentCountRetriever {
         }
         log.info("Re-ranking top terms...");
         Set<Entry<String, Double>> sorted_entries = HashMapSorting.sort(scores);
-        log.info("Outputting top re-ranked terms to refinedRankingFile");
+        log.info("Outputting top re-ranked terms to "+ refinedRankingFile);
         writeToFile(refinedRankingFile, sorted_entries);
 
     }
