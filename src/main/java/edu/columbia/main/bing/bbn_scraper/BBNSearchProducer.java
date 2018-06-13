@@ -108,7 +108,6 @@ public class BBNSearchProducer extends BabelProducer {
 
         if (json.has("webPages")) {
             JsonObject webPages = json.getAsJsonObject("webPages");
-            log.info(webPages.getAsJsonPrimitive("totalEstimatedMatches").getAsInt());
             return webPages.getAsJsonPrimitive("totalEstimatedMatches").getAsInt();
         }
         return 0;
