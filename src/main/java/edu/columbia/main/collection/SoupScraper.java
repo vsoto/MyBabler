@@ -18,6 +18,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.safety.Cleaner;
 import org.jsoup.safety.Whitelist;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+
 import java.util.HashMap;
 import java.util.AbstractMap.SimpleEntry;
 
@@ -68,7 +72,7 @@ public class SoupScraper {
         double web_precision = 0.0;
         int count_tokens = 0;
 
-        Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36").get();
+        Document doc = getDocument(url);
         boolean valid = Jsoup.isValid(doc.html(), Whitelist.basic());
 
         if (!valid) {
@@ -85,5 +89,20 @@ public class SoupScraper {
 
         log.info("[SUMMARY] " + url + " web_prec=" + web_precision + " count_tokens=" + count_tokens);
         return new SimpleEntry<>(web_precision, count_tokens);
+    }
+
+    private static Document getDocument(String url_str) throws IOException {
+        Document doc;
+        try {
+            doc = Jsoup.connect(url_str).userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36").get();
+            return doc;
+        } catch (Exception e) {
+            log.error("CATCHING!");
+            log.error(e);
+            URL url = new URL(url_str);
+            URLConnection connection = url.openConnection();
+            doc = Jsoup.parse(connection.getInputStream(), "UTF-8");
+            return doc;
+        }
     }
 }
