@@ -24,7 +24,7 @@ import java.util.Set;
  */
 public class RefinedDocumentCountRetriever {
     private static final Logger log = Logger.getLogger(RefinedDocumentCountRetriever.class);
-    private static final int num_top_terms_ = 4;
+    private static final int num_top_terms_ = 200;
 
     public static void start(String pathBuildTranscripts, String initialRankingFile, String refinedRankingFile) {
         log.info("Reading initial ranking of terms...");
@@ -49,7 +49,9 @@ public class RefinedDocumentCountRetriever {
                     df = 500;
                 }
                 double p = st.web_precision;
-                scores.put(term, df * p);
+                double final_score = df * p;
+                log.info("[FINAL] " + term + ": " + final_score);
+                scores.put(term, final_score);
                 term_counter++;
             } else {
                 break;
