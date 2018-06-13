@@ -92,19 +92,7 @@ public class SoupScraper {
     }
 
     private static Document getDocument(String url_str) throws IOException {
-        Document doc;
-        try {
-            doc = Jsoup.connect(url_str).userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36").get();
-            return doc;
-        } catch (Exception e) {
-            log.error("CATCHING!");
-            log.error(e);
-            URL url = new URL(url_str);
-            URLConnection connection = url.openConnection();
-            doc = Jsoup.parse(connection.getInputStream(), "UTF-8", url_str);
-            log.error("DONE!");
-            log.info(doc.text());
-            return doc;
-        }
+        Document doc = Jsoup.connect(url_str).timeout(10*1000).userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36").get();
+        return doc;
     }
 }
