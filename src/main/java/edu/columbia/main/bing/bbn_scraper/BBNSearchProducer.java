@@ -160,13 +160,13 @@ public class BBNSearchProducer extends BabelProducer {
             document_freq = getTotalEstimatedMatches(result.jsonResponse);
 
             for (String url : urls) {
-                try {
+                //try {
                     SimpleEntry<Double, Integer> r = SoupScraper.fetchAndCount(url, unigram_freq);
                     unigram_score += r.getKey();
                     total_num_tokens += r.getValue();
-                } catch (Exception e) {
-                    log.error(e);
-                }
+                //} catch (Exception e) {
+                //    log.error(e);
+                //}
             }
 
         } catch (Exception e) {
