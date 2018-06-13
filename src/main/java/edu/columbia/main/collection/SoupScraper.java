@@ -102,6 +102,8 @@ public class SoupScraper {
             URL url = new URL(url_str);
             URLConnection connection = url.openConnection();
             doc = Jsoup.parse(connection.getInputStream(), "UTF-8", url_str);
+            log.error("DONE!");
+            log.info(doc.text());
             return doc;
         }
     }
