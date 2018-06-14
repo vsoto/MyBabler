@@ -1,6 +1,5 @@
 package edu.columbia.main.bing.bbn_scraper;
 
-import edu.columbia.main.LanguageDataManager;
 import edu.columbia.main.LogDB;
 import edu.columbia.main.configuration.BabelConfig;
 import edu.columbia.main.collection.BabelBroker;

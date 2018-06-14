@@ -169,7 +169,7 @@ public class BabelMain {
 	}
 	else if (module.equals("bbn")) {
 		log.info("Starting BBN-style scraper");
-		new BBNJobManager().run(rescoredRankedList);
+		new BBNJobManager().run(langCode, rescoredRankedList);
 	}
         else if (tagBBNData == true){
 	    System.out.println(args[1]);

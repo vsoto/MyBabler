@@ -38,11 +38,11 @@ public class BBNJobManager extends BabelScraper {
 
     private static final Logger log = Logger.getLogger(BBNJobManager.class);
 
-    public void run(String ranked_ngrams_file){
+    public void run(String lang, String ranked_ngrams_file){
         BBNBroker broker = new BBNBroker();
         LanguageDetector lp = new LanguageDetector();
         HttpClient httpClient = new MTHttpClient().getClient();
-        String lang = LanguageDataManager.getLanguage();
+        
         String[] langs = new String[]{lang};
         String[] ranked_ngrams_files = new String[]{ranked_ngrams_file};
         ViewManager viewManager = new ViewManager(langs);
