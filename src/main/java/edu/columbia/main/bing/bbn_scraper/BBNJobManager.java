@@ -44,9 +44,7 @@ public class BBNJobManager extends BabelScraper {
         HttpClient httpClient = new MTHttpClient().getClient();
         String lang = LanguageDataManager.getLanguage();
         String[] langs = new String[]{lang};
-        log.info(ranked_ngrams_file);
         String[] ranked_ngrams_files = new String[]{ranked_ngrams_file};
-        log.info(ranked_ngrams_files);
         ViewManager viewManager = new ViewManager(langs);
 
 
