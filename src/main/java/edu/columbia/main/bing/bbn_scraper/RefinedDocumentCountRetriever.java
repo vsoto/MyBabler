@@ -77,7 +77,7 @@ public class RefinedDocumentCountRetriever {
             bufferedWriter.close();
             fileWriter.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
@@ -99,7 +99,7 @@ public class RefinedDocumentCountRetriever {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return entries;
 
@@ -182,12 +182,12 @@ public class RefinedDocumentCountRetriever {
                     fileReader.close();
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e);
                 }
 
             }
         }
-        HashMap<String, Double> ngrams_freq = new HashMap<String, Double>();
+        HashMap<String, Double> ngrams_freq = new HashMap<>();
         for (Entry<String, Double> entry: ngrams_count.entrySet()) {
             ngrams_freq.put(entry.getKey(), entry.getValue()/total_num_tokens);
         }

@@ -36,10 +36,9 @@ import java.util.concurrent.Future;
  */
 public class BBNJobManager extends BabelScraper {
 
-    Logger log = Logger.getLogger(BBNJobManager.class);
+    private static final Logger log = Logger.getLogger(BBNJobManager.class);
 
     public void run(String ranked_ngrams_file){
-
         BBNBroker broker = new BBNBroker();
         LanguageDetector lp = new LanguageDetector();
         HttpClient httpClient = new MTHttpClient().getClient();

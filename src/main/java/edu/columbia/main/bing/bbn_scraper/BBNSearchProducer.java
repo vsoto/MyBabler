@@ -41,16 +41,20 @@ public class BBNSearchProducer extends BabelProducer {
     static AtomicInteger numOfRequests;
     static private final Logger log = Logger.getLogger(BBNSearchProducer.class);
     
+    static private final int max_page_size = 50;
+    static private final int max_num_scraped_urls = 100;
+    static private final int query_top_ngrams = 200;
+    
     public BBNSearchProducer(BabelBroker broker, String language, String ranked_ngrams_filename) {
         this.broker = broker;
         this.lang = language;
-        this.words = InitialDocumentCountRetriever.getHighestRankedNGrams(ranked_ngrams_filename, 2);
-        System.out.println("Using top " + this.words.size() + " ngrams");
+        this.words = InitialDocumentCountRetriever.getHighestRankedNGrams(ranked_ngrams_filename, query_top_ngrams);
+        log.info("Querying top " + this.words.size() + " ngrams");
         this.logDb = new LogDB(this.lang);
         numOfRequests = new AtomicInteger();
     }
 
-    private static SearchResults SearchWeb(String searchQuery, String count, String offset) throws Exception {
+    private static SearchResults SearchWeb(String searchQuery, int count, String offset) throws Exception {
         URL url = new URL(host + path + "?q=" + URLEncoder.encode(searchQuery, "UTF-8") + "&count=" + count + "&offset=" + offset);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
@@ -120,9 +124,10 @@ public class BBNSearchProducer extends BabelProducer {
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
         try {
             for (int i = 0; !breakFlag; i++) {
-                SearchResults result = SearchWeb(searchQuery, "50", String.valueOf(i * 50));
+                SearchResults result = SearchWeb(searchQuery, max_page_size, String.valueOf(i * max_page_size));
                 ArrayList<String> urls = getURLs(result.jsonResponse);
-                if (counter++ == 100 || urls.isEmpty()) {
+                log.info(ngram + "[" + i + "] : " + urls.size() + " urls retrieved.");
+                if (counter++ == max_num_scraped_urls || urls.isEmpty()) {
                     breakFlag = true;
                 }
                 numOfRequests.getAndIncrement();
@@ -156,7 +161,7 @@ public class BBNSearchProducer extends BabelProducer {
 
         try {
 
-            SearchResults result = SearchWeb(searchQuery, "50", "0");
+            SearchResults result = SearchWeb(searchQuery, max_page_size, "0");
             ArrayList<String> urls = getURLs(result.jsonResponse);
             document_freq = getTotalEstimatedMatches(result.jsonResponse);
 
