@@ -12,6 +12,7 @@ import static edu.columbia.main.collection.RSSScraper.log;
 import edu.columbia.main.db.DAO;
 import edu.columbia.main.db.Models.BBNPost;
 import edu.columbia.main.language_id.LanguageDetector;
+import edu.columbia.main.language_id.Result;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,11 +32,12 @@ import java.util.AbstractMap.SimpleEntry;
  */
 public class SoupScraper {
 
+    public int numOfFiles = 0;
     private final LanguageDetector ld;
-    public String language = "";
-    private LogDB logDb;
-    private String url;
-    static Logger log = Logger.getLogger(SoupScraper.class);
+    public final String language;
+    private final LogDB logDb;
+    private final String url;
+    private static final Logger log = Logger.getLogger(SoupScraper.class);
 
     public SoupScraper(String url, String language, LogDB logDb, LanguageDetector ld) {
         this.url = url;
@@ -57,11 +59,21 @@ public class SoupScraper {
         String content = doc.text();
 
         try {
-            FileSaver file = new FileSaver(content, this.language, "soup", this.url, this.url, String.valueOf(content.hashCode()));
-            String fileName = file.getFileName();
-            BBNPost post = new BBNPost(content, this.language, null, "soup", this.url, this.url, fileName);
-            if (DAO.saveEntry(post)) {
-                file.save(this.logDb);
+            Result result = ld.detectLanguage(content, language);
+            if (result.languageCode.equals(language) && result.isReliable) {
+                FileSaver file = new FileSaver(content, this.language, "soup", this.url, this.url, String.valueOf(content.hashCode()));
+                String fileName = file.getFileName();
+                BBNPost post = new BBNPost(content, this.language, null, "soup", this.url, this.url, fileName);
+                if (DAO.saveEntry(post)) {
+                    log.info("Saving " + this.url);
+                    file.save(this.logDb);
+                }
+                else {
+                    log.info("Duplicated url: " + this.url);
+                }
+            }
+            else {
+                log.info("Wrong lang code [" + result.languageCode + "]: " + this.url);
             }
         } catch (Exception e) {
             log.error(e);

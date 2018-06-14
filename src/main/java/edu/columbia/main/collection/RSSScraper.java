@@ -22,10 +22,9 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * This class scrapes data from a RSS feed, checks that it is in the desired languageCode and finally saves it
- * Created by Gideon on 9/28/14.
+ * This class scrapes data from a RSS feed, checks that it is in the desired
+ * languageCode and finally saves it Created by Gideon on 9/28/14.
  *
  */
 public class RSSScraper {
@@ -46,7 +45,6 @@ public class RSSScraper {
 
     }
 
-
     public AbstractMap.SimpleEntry<Integer, Integer> fetchAndSave() throws Exception {
 
         URL url = new URL(this.url);
@@ -54,17 +52,16 @@ public class RSSScraper {
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed feed = input.build(new XmlReader(url));
 
-
         int items = feed.getEntries().size();
 
-        if(items > 0){
-            log.info("Attempting to parse rss feed: "+ this.url );
-            log.info("This Feed has "+items +" items");
+        if (items > 0) {
+            log.info("Attempting to parse rss feed: " + this.url);
+            log.info("This Feed has " + items + " items");
         }
 
-        List <SyndEntry> entries = feed.getEntries();
+        List<SyndEntry> entries = feed.getEntries();
 
-        for (SyndEntry item : entries){
+        for (SyndEntry item : entries) {
             log.info("Title: " + item.getTitle());
             log.info("Link: " + item.getLink());
             SyndContentImpl contentHolder = (SyndContentImpl) item.getContents().get(0);
@@ -74,38 +71,34 @@ public class RSSScraper {
             Document doc = Jsoup.parse(content);
             content = doc.text();
             try {
-                    Result result = ld.detectLanguage(content, language);
-                    if (result.languageCode.equals(language) && result.isReliable) {
+                Result result = ld.detectLanguage(content, language);
+                if (result.languageCode.equals(language) && result.isReliable) {
 
-                        FileSaver file = new FileSaver(content, this.language, "bs", item.getLink(), item.getUri(), String.valueOf(content.hashCode()));
-                        String fileName = file.getFileName();
-                        BlogPost post = new BlogPost(content,this.language,null,"bs",item.getLink(),item.getUri(),fileName);
-                        if(DAO.saveEntry(post)) {
-                            file.save(this.logDb);
-                            numOfFiles++;
-                            wrongCount = 0;
-                        }
-
+                    FileSaver file = new FileSaver(content, this.language, "bs", item.getLink(), item.getUri(), String.valueOf(content.hashCode()));
+                    String fileName = file.getFileName();
+                    BlogPost post = new BlogPost(content, this.language, null, "bs", item.getLink(), item.getUri(), fileName);
+                    if (DAO.saveEntry(post)) {
+                        file.save(this.logDb);
+                        numOfFiles++;
+                        wrongCount = 0;
                     }
 
-                    else{
-                        log.info("Item " + item.getTitle() + "is in a diff languageCode, skipping this post  "+ result.languageCode);
-                        wrongCount ++;
-                        if(wrongCount > 3){
-                            log.info("Already found 3 posts in the wrong languageCode, skipping this blog");
-                        }
-                        break;
+                } else {
+                    log.info("Item " + item.getTitle() + "is in a diff languageCode, skipping this post  " + result.languageCode);
+                    wrongCount++;
+                    if (wrongCount > 3) {
+                        log.info("Already found 3 posts in the wrong languageCode, skipping this blog");
                     }
+                    break;
+                }
 
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 log.error(e);
                 break;
             }
 
-
         }
-        return new AbstractMap.SimpleEntry<>(numOfFiles,wrongCount);
+        return new AbstractMap.SimpleEntry<>(numOfFiles, wrongCount);
     }
 
     public static List getAllPostsFromFeed(String urlToGet, String source) throws IOException, FeedException {
@@ -136,8 +129,7 @@ public class RSSScraper {
                 }
             }
             return posts;
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             log.error(ex);
             return posts;
         }
