@@ -179,7 +179,9 @@ public class BBNSearchProducer extends BabelProducer {
             log.error(e);
             System.exit(1);
         }
-        double web_precision = unigram_score * 1.0 / total_num_tokens;
+        double web_precision = 0.0;
+        if (total_num_tokens > 0)
+            web_precision = unigram_score * 1.0 / total_num_tokens;
         log.info(term + "\t" + count_processed_docs + "\t" + document_freq + "\t" + unigram_score + "\t" + total_num_tokens + "\t" + web_precision);
         SearchStats st = new SearchStats(document_freq, web_precision);
         return st;
