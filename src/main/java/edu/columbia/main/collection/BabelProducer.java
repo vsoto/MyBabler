@@ -101,10 +101,11 @@ public class BabelProducer implements Runnable {
                     continue;
                 }
                 searchWordAndSave(word);
-                // it.remove();
+                it.remove();
             }
 
             //after finishing all the words refill the list
+            // TODO(vsoto): check this out
             // this.words = LanguageDataManager.getMostCommonWords(this.lang, 3000, ngram);
         }
 
