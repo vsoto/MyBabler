@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * Created by Gideon on 4/8/15.
  */
-public class BabelProducer implements Runnable{
+public class BabelProducer implements Runnable {
 
     protected HttpClient httpClient;
     protected LogDB logDb;
@@ -33,7 +33,7 @@ public class BabelProducer implements Runnable{
         this.broker = broker;
         this.lang = language;
         this.httpClient = httpClient;
-        log.info("1");
+        
         this.words = LanguageDataManager.getMostCommonWords(this.lang, 3000, ngram);
         this.logDb =  new LogDB(this.lang);
         this.usersLogDB = new LogDB(this.lang,"TopsyUsers");
@@ -48,7 +48,6 @@ public class BabelProducer implements Runnable{
         this.usersLogDB = new LogDB(this.lang,"TopsyUsers");
         this.byUsers = user;
 
-        log.info("2");
         if(byUsers)
             //this.users = getUserIDsFromFile();
             this.users = getUsersFromDB();
@@ -93,7 +92,6 @@ public class BabelProducer implements Runnable{
 
 
     public void scrapeByMostCommonWords() {
-
         while(true) {
             Iterator it = words.iterator();
             while (it.hasNext()) {
@@ -103,12 +101,11 @@ public class BabelProducer implements Runnable{
                     continue;
                 }
                 searchWordAndSave(word);
-                it.remove();
+                // it.remove();
             }
 
             //after finishing all the words refill the list
-            log.info("3");
-            this.words = LanguageDataManager.getMostCommonWords(this.lang, 3000, ngram);
+            // this.words = LanguageDataManager.getMostCommonWords(this.lang, 3000, ngram);
         }
 
     }
