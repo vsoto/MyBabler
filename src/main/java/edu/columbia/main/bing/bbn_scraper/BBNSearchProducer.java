@@ -126,7 +126,7 @@ public class BBNSearchProducer extends BabelProducer {
             for (int i = 0; !breakFlag; i++) {
                 SearchResults result = SearchWeb(searchQuery, max_page_size, String.valueOf(i * max_page_size));
                 ArrayList<String> urls = getURLs(result.jsonResponse);
-                log.info(ngram + "[" + i + "] : " + urls.size() + " urls retrieved.");
+                log.info(ngram + " [" + i + "] : " + urls.size() + " urls retrieved.");
                 if (counter++ == max_num_scraped_urls || urls.isEmpty()) {
                     breakFlag = true;
                 }
