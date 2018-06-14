@@ -19,7 +19,7 @@ import java.util.Scanner;
 
 public class LogDB implements Serializable{
 
-    public static final String SCRAPING_FOLDER = BabelConfig.getPathToScrapingFolder()+"/";
+    public static final String SCRAPING_FOLDER = BabelConfig.getInstance().getPathToScrapingFolder()+"/";
     public static final String LOG_FILE = "/log2.txt";
     private HashMap<String,LogDBEntry> db;
     File dbFile;
