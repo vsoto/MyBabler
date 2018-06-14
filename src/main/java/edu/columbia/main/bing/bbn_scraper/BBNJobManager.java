@@ -1,6 +1,5 @@
 package edu.columbia.main.bing.bbn_scraper;
 
-import edu.columbia.main.LanguageDataManager;
 import edu.columbia.main.MTHttpClient;
 import edu.columbia.main.collection.BabelScraper;
 import edu.columbia.main.language_id.LanguageDetector;
