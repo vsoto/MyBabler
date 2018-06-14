@@ -21,7 +21,7 @@ public interface ConfigFromFile extends Config {
 
 
     @DefaultValue("scraping/")
-    String productionScarpingFolderPath();
+    String productionScrapingFolderPath();
 
     @DefaultValue("true")
     Boolean useMajorityVote();

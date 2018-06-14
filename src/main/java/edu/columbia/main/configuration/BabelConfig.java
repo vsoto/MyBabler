@@ -105,7 +105,7 @@ public class BabelConfig {
      */
     public static String getPathToScrapingFolder() {
         ConfigFromFile cfg = BabelConfig.getInstance().getConfigFromFile();
-        String remote = cfg.productionScarpingFolderPath();
+        String remote = cfg.productionScrapingFolderPath();
         return remote;
     }
 
