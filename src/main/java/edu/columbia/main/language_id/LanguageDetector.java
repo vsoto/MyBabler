@@ -62,16 +62,18 @@ public class LanguageDetector {
      * @throws ClassNotFoundException
      */
     public Result detectMajorityVote(String text, String lang) throws IOException, ClassNotFoundException {
-
+        log.info("1");
         if(cld == null){ //if we can't load CLD no point in doing majority vote
+            log.info("2");
             return detectLanguage(text,lang);
         }
-
+        log.info("3");
         ArrayList<Result> results = new ArrayList<>();
         LanguageCode code = new LanguageCode(lang, LanguageCode.CodeTypes.ISO_639_2);
-	
+	log.info("4 " + code);
         if(lp.getSupportedLanguages().contains(code) || (code.getLanguageCode().equals("swa") && lp.getSupportedLanguages().contains(new LanguageCode("swh", LanguageCode.CodeTypes.ISO_639_2)))){
-	    Result pred = lp.detectLanguage(text);
+            Result pred = lp.detectLanguage(text);
+            log.info("5 " + pred.languageCode);
 	    if (pred.languageCode.equals("swh")){
 		pred.languageCode = "swa";
 	    }
@@ -79,12 +81,14 @@ public class LanguageDetector {
 	}
         if(tc.getSupportedLanguages().contains(code) || (code.getLanguageCode().equals("swa") && tc.getSupportedLanguages().contains(new LanguageCode("swh", LanguageCode.CodeTypes.ISO_639_2)))){
 	    Result pred = tc.detectLanguage(text);
+            log.info("6 " + pred.languageCode);
 	    if (pred.languageCode.equals("swh"))
                 pred.languageCode = "swa";
             results.add(pred);
 	}
         if(cld.getSupportedLanguages().contains(code) || (code.getLanguageCode().equals("swa") && cld.getSupportedLanguages().contains(new LanguageCode("swh", LanguageCode.CodeTypes.ISO_639_2)))) {
 	    Result pred = cld.detectLanguage(text);
+            log.info("7 " + pred.languageCode);
 	    if (pred.languageCode.equals("swh"))
                 pred.languageCode = "swa";
             results.add(pred);
