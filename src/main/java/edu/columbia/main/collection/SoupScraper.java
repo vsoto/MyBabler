@@ -60,6 +60,8 @@ public class SoupScraper {
 
         try {
             Result result = ld.detectLanguage(content, language);
+            log.info(content);
+            log.info(result.languageCode + "\t" + result.engine + "\t" + result.isReliable + "\t" + result.confidence);
             if (result.languageCode.equals(language) && result.isReliable) {
                 FileSaver file = new FileSaver(content, this.language, "soup", this.url, this.url, String.valueOf(content.hashCode()));
                 String fileName = file.getFileName();
