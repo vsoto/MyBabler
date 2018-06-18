@@ -60,13 +60,13 @@ public class SoupScraper {
 
         try {
             Result result = ld.detectLanguage(content, language);
-            log.info(result.languageCode + "\t" + result.engine + "\t" + result.isReliable + "\t" + result.confidence);
+            log.info("Language ID result: " + result.languageCode + "\t" + result.engine + "\t" + result.isReliable + "\t" + result.confidence);
             if (result.languageCode.equals(language) && result.isReliable) {
                 FileSaver file = new FileSaver(content, this.language, "soup", this.url, this.url, String.valueOf(content.hashCode()));
                 String fileName = file.getFileName();
                 BBNPost post = new BBNPost(content, this.language, null, "soup", this.url, this.url, fileName);
                 if (DAO.saveEntry(post)) {
-                    log.info("Saving " + this.url);
+                    log.info("Saving document: " + this.url);
                     file.save(this.logDb);
                 }
                 else {

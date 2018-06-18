@@ -92,7 +92,7 @@ public class BBNSearchProducer extends BabelProducer {
     private static ArrayList<String> getURLs(String json_text) {
         JsonParser parser = new JsonParser();
         JsonObject json = parser.parse(json_text).getAsJsonObject();
-        ArrayList<String> urls = new ArrayList<String>();
+        ArrayList<String> urls = new ArrayList<>();
 
         if (json.has("webPages")) {
             JsonObject webPages = json.getAsJsonObject("webPages");
@@ -126,7 +126,8 @@ public class BBNSearchProducer extends BabelProducer {
                 SearchResults result = SearchWeb(searchQuery, max_page_size, String.valueOf(i * max_page_size));
                 ArrayList<String> urls = getURLs(result.jsonResponse);
                 log.info(ngram + " [" + i + "] : " + urls.size() + " urls retrieved.");
-                if (counter++ == max_num_scraped_urls || urls.isEmpty()) {
+                counter += urls.size();
+                if (counter == max_num_scraped_urls || urls.isEmpty()) {
                     breakFlag = true;
                 }
                 numOfRequests.getAndIncrement();
