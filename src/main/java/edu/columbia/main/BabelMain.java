@@ -153,10 +153,7 @@ public class BabelMain {
             BabelConfig.getInstance().setCollectionLanguage(langCode);
         }
         String language = langCode;
-
-
-
-
+        
         if(wordList != null){
             BabelConfig.getInstance().setPathToWordsList(wordList);
         }
