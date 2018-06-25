@@ -120,14 +120,23 @@ public class BBNSearchProducer extends BabelProducer {
     protected void searchWordAndSave(String ngram) {
         boolean breakFlag = false;
         int counter = 0;
+        int totalEstimatedMatches = 0;
+        boolean  reachedEndResults = false;
         String searchQuery = "\"" + ngram + "\"" + " NOT lang:en";
         try {
             for (int i = 0; !breakFlag; i++) {
                 SearchResults result = SearchWeb(searchQuery, max_page_size, String.valueOf(i * max_page_size));
                 ArrayList<String> urls = getURLs(result.jsonResponse);
                 log.info(ngram + " [" + i + "] : " + urls.size() + " urls retrieved.");
+                
+                if (i == 0) {
+                    totalEstimatedMatches = getTotalEstimatedMatches(result.jsonResponse);
+                }
+                reachedEndResults = (totalEstimatedMatches <= ((i + 1)*max_page_size));
+                
+                
                 counter += urls.size();
-                if (counter == max_num_scraped_urls || urls.isEmpty()) {
+                if (counter >= max_num_scraped_urls || urls.isEmpty() || reachedEndResults) {
                     breakFlag = true;
                 }
                 numOfRequests.getAndIncrement();
