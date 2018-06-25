@@ -41,8 +41,8 @@ public class BBNSearchProducer extends BabelProducer {
     static private final Logger log = Logger.getLogger(BBNSearchProducer.class);
     
     static private final int max_page_size = 50;
-    static private final int max_num_scraped_urls = 100;
-    static private final int query_top_ngrams = 20;
+    static private final int max_num_scraped_urls = 500;
+    static private final int query_top_ngrams = 200;
     
     public BBNSearchProducer(BabelBroker broker, String language, String ranked_ngrams_filename) {
         this.broker = broker;
@@ -126,20 +126,20 @@ public class BBNSearchProducer extends BabelProducer {
         try {
             for (int i = 0; !breakFlag; i++) {
                 SearchResults result = SearchWeb(searchQuery, max_page_size, String.valueOf(i * max_page_size));
-                ArrayList<String> urls = getURLs(result.jsonResponse);
-                log.info(ngram + " [" + i + "] : " + urls.size() + " urls retrieved.");
                 
                 if (i == 0) {
                     totalEstimatedMatches = getTotalEstimatedMatches(result.jsonResponse);
+                    log.info(ngram + " [total_estimated] = " + totalEstimatedMatches);
                 }
                 reachedEndResults = (totalEstimatedMatches <= ((i + 1)*max_page_size));
                 
-                
+                ArrayList<String> urls = getURLs(result.jsonResponse);
                 counter += urls.size();
                 if (counter >= max_num_scraped_urls || urls.isEmpty() || reachedEndResults) {
                     breakFlag = true;
                 }
                 numOfRequests.getAndIncrement();
+                log.info(ngram + " [" + i + "] : " + urls.size() + " urls retrieved. [" + counter + "]");
 
                 for (String url : urls) {
                     BBNJob job = new BBNJob(url, lang, logDb);
