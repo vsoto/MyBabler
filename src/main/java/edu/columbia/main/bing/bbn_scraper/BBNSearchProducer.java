@@ -41,8 +41,8 @@ public class BBNSearchProducer extends BabelProducer {
     static private final Logger log = Logger.getLogger(BBNSearchProducer.class);
     
     static private final int max_page_size = 50;
-    static private final int max_num_scraped_urls = 500;
-    static private final int query_top_ngrams = 200;
+    static private final int max_num_scraped_urls = 2000;
+    static private final int query_top_ngrams = 500;
     
     public BBNSearchProducer(BabelBroker broker, String language, String ranked_ngrams_filename) {
         this.broker = broker;
@@ -54,7 +54,7 @@ public class BBNSearchProducer extends BabelProducer {
     }
 
     private static SearchResults SearchWeb(String searchQuery, int count, String offset) throws Exception {
-        URL url = new URL(host + path + "?q=" + URLEncoder.encode(searchQuery, "UTF-8") + "&count=" + count + "&offset=" + offset);
+        URL url = new URL(host + path + "?q=" + URLEncoder.encode(searchQuery, "UTF-8") + "&count=" + count + "&offset=" + offset + "&freshness=Week&responseFilter=Webpages,News");
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
         connection.setRequestProperty("Ocp-Apim-Subscription-Key", subscriptionKey);
