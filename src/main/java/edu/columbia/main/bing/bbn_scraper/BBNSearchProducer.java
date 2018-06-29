@@ -54,7 +54,7 @@ public class BBNSearchProducer extends BabelProducer {
     }
 
     private static SearchResults SearchWeb(String searchQuery, int count, String offset) throws Exception {
-        URL url = new URL(host + path + "?q=" + URLEncoder.encode(searchQuery, "UTF-8") + "&count=" + count + "&offset=" + offset + "&freshness=Week");
+        URL url = new URL(host + path + "?q=" + URLEncoder.encode(searchQuery, "UTF-8") + "&count=" + count + "&offset=" + offset + "&freshness=Month");
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         subscriptionKey = BabelConfig.getInstance().getConfigFromFile().bing();
         connection.setRequestProperty("Ocp-Apim-Subscription-Key", subscriptionKey);
