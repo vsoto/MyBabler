@@ -67,9 +67,6 @@ public class LanguageDetector {
         }
         ArrayList<Result> results = new ArrayList<>();
         LanguageCode code = new LanguageCode(lang, LanguageCode.CodeTypes.ISO_639_2);
-        System.err.println(lang);
-        System.err.println(code);
-        
 	
         if(lp.getSupportedLanguages().contains(code) || (code.getLanguageCode().equals("swa") && lp.getSupportedLanguages().contains(new LanguageCode("swh", LanguageCode.CodeTypes.ISO_639_2)))){
             Result pred = lp.detectLanguage(text);
@@ -77,21 +74,18 @@ public class LanguageDetector {
 		pred.languageCode = "swa";
 	    }
             results.add(pred);
-            System.err.println("LP: " + pred.languageCode);
 	}
         if(tc.getSupportedLanguages().contains(code) || (code.getLanguageCode().equals("swa") && tc.getSupportedLanguages().contains(new LanguageCode("swh", LanguageCode.CodeTypes.ISO_639_2)))){
 	    Result pred = tc.detectLanguage(text);
 	    if (pred.languageCode.equals("swh"))
                 pred.languageCode = "swa";
             results.add(pred);
-            System.err.println("TC: " + pred.languageCode);
 	}
         if(cld.getSupportedLanguages().contains(code) || (code.getLanguageCode().equals("swa") && cld.getSupportedLanguages().contains(new LanguageCode("swh", LanguageCode.CodeTypes.ISO_639_2)))) {
 	    Result pred = cld.detectLanguage(text);
 	    if (pred.languageCode.equals("swh"))
                 pred.languageCode = "swa";
             results.add(pred);
-            System.err.println("CLD: " + pred.languageCode);
 	}
 
         Result res = mostCommon(results);

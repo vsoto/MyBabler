@@ -17,141 +17,133 @@ import java.util.Map.Entry;
  * TextCategorizer is able to categorize texts by computing the similarity of
  * the FingerPrint of a text with a collection of the FingerPrints of the
  * categories.
- * 
+ *
  */
-public class TextCategorizer extends LanguageClassifier{
+public class TextCategorizer extends LanguageClassifier {
 
+    private InputStream confFile = null;
 
+    private final static int UNKNOWN_LIMIT = 1;
 
-	private InputStream confFile = null;
-	
-	private final static int UNKNOWN_LIMIT = 1;
+    private final String jarConfFile = "languageData/language_fp/textcat.conf";
 
-	private final String jarConfFile = "languageData/language_fp/textcat.conf";
+    private ArrayList<FingerPrint> categories = new ArrayList<FingerPrint>();
 
-	private ArrayList<FingerPrint> categories = new ArrayList<FingerPrint>();
+    public TextCategorizer() {
+        loadCategories();
+    }
 
-	public TextCategorizer() {
-		loadCategories();
-	}
+    @Override
+    public Result detectLanguage(String text) throws IOException, ClassNotFoundException {
+        if (text.length() < UNKNOWN_LIMIT) {
+            return new Result("unknown", true, 0.0);
+        }
+        FingerPrint fp = new FingerPrint();
+        fp.create(text);
+        fp.categorize(categories);
+        return new Result(fp.getCategory(), true, fp.getConfidence(), "textcat");
+    }
 
-	@Override
-	public Result detectLanguage(String text) throws IOException, ClassNotFoundException {
-		if(text.length() < UNKNOWN_LIMIT) {
-                        return new Result("unknown", true, 0.0);
+    /**
+     * creates a new TextCategorizer with the given configuration file. the
+     * configuration file maps paths to FingerPrint files to categories which
+     * are used to categorize the texts passed to the TextCategorizer.
+     *
+     * @param confFile the path to the configuration file
+     */
+    public TextCategorizer(InputStream confFile) {
+        setConfFile(confFile);
+    }
+
+    /**
+     * sets the configuration file path.
+     *
+     * @param confFile the path to the configuration file
+     */
+    public void setConfFile(InputStream confFile) {
+        this.confFile = confFile;
+        loadCategories();
+    }
+
+    /**
+     * clears the categories-collection and fills it with the FingerPrints given
+     * in the configuration file.
+     */
+    private void loadCategories() {
+        this.categories.clear();
+        Logger log = Logger.getLogger(TextCategorizer.class);
+        try {
+            MyProperties properties = new MyProperties();
+            if (confFile == null) {
+                properties.load(TextCategorizer.class.getClassLoader()
+                        .getResourceAsStream(jarConfFile));
+            } else {
+                properties.load(new FileInputStream(confFile.toString()));
+            }
+            for (Entry<String, String> entry : properties.entrySet()) {
+                FingerPrint fp;
+                if (confFile == null) {
+                    fp = new FingerPrint(TextCategorizer.class.getClassLoader()
+                            .getResourceAsStream(entry.getKey()));
+                } else {
+                    fp = new FingerPrint(BabelConfig.getResourcesPath() + entry.getKey());
                 }
-                FingerPrint fp = new FingerPrint();
-                fp.create(text);
-                fp.categorize(categories);
-		return new Result(fp.getCategory(), true, fp.getConfidence(), "textcat");
-	}
-
-
-
-	/**
-	 * creates a new TextCategorizer with the given configuration file. the
-	 * configuration file maps paths to FingerPrint files to categories which
-	 * are used to categorize the texts passed to the TextCategorizer.
-	 *
-	 * @param confFile
-	 *            the path to the configuration file
-	 */
-	public TextCategorizer(InputStream confFile) {
-		setConfFile(confFile);
-	}
-
-	/**
-	 * sets the configuration file path.
-	 *
-	 * @param confFile
-	 *            the path to the configuration file
-	 */
-	public void setConfFile(InputStream confFile) {
-		this.confFile = confFile;
-		loadCategories();
-	}
-
-	/**
-	 * clears the categories-collection and fills it with the FingerPrints given
-	 * in the configuration file.
-	 */
-	private void loadCategories() {
-		this.categories.clear();
-		Logger log = Logger.getLogger(TextCategorizer.class);
-		try {
-			MyProperties properties = new MyProperties();
-			if (confFile == null) {
-				properties.load(TextCategorizer.class.getClassLoader()
-						.getResourceAsStream(jarConfFile));
-			} else {
-				properties.load(new FileInputStream(confFile.toString()));
-			}
-			for (Entry<String, String> entry : properties.entrySet()) {
-				FingerPrint fp;
-				if (confFile == null) {
-					fp = new FingerPrint(TextCategorizer.class.getClassLoader()
-							.getResourceAsStream(entry.getKey()));
-				} else {
-					fp = new FingerPrint(BabelConfig.getResourcesPath() + entry.getKey());
-				}
-				fp.setCategory(entry.getValue());
-				this.categories.add(fp);
+                fp.setCategory(entry.getValue());
+                this.categories.add(fp);
                 this.supportedLanguages.add(new LanguageCode(entry.getValue(), LanguageCode.CodeTypes.ISO_639_2));
-			}
-		} catch (FileNotFoundException fnfe) {
-			log.error(fnfe);
-		}
-	}
+            }
+        } catch (FileNotFoundException fnfe) {
+            log.error(fnfe);
+        }
+    }
 
-	/**
-	 * categorizes the text passed to it
-	 * 
-	 * @param text
-	 *            text to be categorized
-	 * @return the category name given in the configuration file
-	 */
-	public String categorize(String text) {
-		if(text.length() < UNKNOWN_LIMIT) {
-			return "unknown";
-		}
-		FingerPrint fp = new FingerPrint();
-		fp.create(text);
-		fp.categorize(categories);
-		return fp.getCategory();
-	}
-	
-	/**
-	 * categorizes only a certain amount of characters in the text. recommended
-	 * when categorizing large texts in order to increase performance.
-	 * 
-	 * @param text text to be analysed
-	 * @param limit number of characters to be analysed
-	 * @return the category name given in the configuration file
-	 */
-	public String categorize(String text,int limit) {
-		if(limit > (text.length()-1)) {
-			return this.categorize(text);
-		}
-		return this.categorize(text.substring(0,limit));
-	}
-	
-	/**
-	 * categorizes a text but returns a map containing all categories and their
-	 * distances to the text.
-	 * 
-	 * @param text text to be categorized
-	 * @return HashMap with categories as keys and distances as values
-	 */
-	public Map<String,Integer> getCategoryDistances(String text) {
-		if (this.categories.isEmpty()) {
-			loadCategories();
-		}
-		FingerPrint fp = new FingerPrint();
-		fp.create(text);
-		fp.categorize(categories);
-		return fp.getCategoryDistances();
-	}
+    /**
+     * categorizes the text passed to it
+     *
+     * @param text text to be categorized
+     * @return the category name given in the configuration file
+     */
+    public String categorize(String text) {
+        if (text.length() < UNKNOWN_LIMIT) {
+            return "unknown";
+        }
+        FingerPrint fp = new FingerPrint();
+        fp.create(text);
+        fp.categorize(categories);
+        return fp.getCategory();
+    }
 
+    /**
+     * categorizes only a certain amount of characters in the text. recommended
+     * when categorizing large texts in order to increase performance.
+     *
+     * @param text text to be analysed
+     * @param limit number of characters to be analysed
+     * @return the category name given in the configuration file
+     */
+    public String categorize(String text, int limit) {
+        if (limit > (text.length() - 1)) {
+            return this.categorize(text);
+        }
+        return this.categorize(text.substring(0, limit));
+    }
+
+    /**
+     * categorizes a text but returns a map containing all categories and their
+     * distances to the text.
+     *
+     * @param text text to be categorized
+     * @return HashMap with categories as keys and distances as values
+     */
+    public Map<String, Integer> getCategoryDistances(String text) {
+        if (this.categories.isEmpty()) {
+            loadCategories();
+        }
+        FingerPrint fp = new FingerPrint();
+        fp.create(text);
+        fp.categorize(categories);
+        return fp.getCategoryDistances();
+    }
 
 //	/**
 //	 * reads from stdin til EOF is read. prints the determined category of the
@@ -187,5 +179,3 @@ public class TextCategorizer extends LanguageClassifier{
 //		}
 //	}
 }
-
-
