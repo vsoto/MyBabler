@@ -67,6 +67,9 @@ public class LanguageDetector {
         }
         ArrayList<Result> results = new ArrayList<>();
         LanguageCode code = new LanguageCode(lang, LanguageCode.CodeTypes.ISO_639_2);
+        System.err.println(lang);
+        System.err.println(code);
+        
 	
         if(lp.getSupportedLanguages().contains(code) || (code.getLanguageCode().equals("swa") && lp.getSupportedLanguages().contains(new LanguageCode("swh", LanguageCode.CodeTypes.ISO_639_2)))){
             Result pred = lp.detectLanguage(text);
