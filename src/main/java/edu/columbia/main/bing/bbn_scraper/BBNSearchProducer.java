@@ -42,7 +42,7 @@ public class BBNSearchProducer extends BabelProducer {
     
     static private final int max_page_size = 50;
     static private final int max_num_scraped_urls = 2000;
-    static private final int query_top_ngrams = 500;
+    static private final int query_top_ngrams = 10;
     
     public BBNSearchProducer(BabelBroker broker, String language, String ranked_ngrams_filename) {
         this.broker = broker;
