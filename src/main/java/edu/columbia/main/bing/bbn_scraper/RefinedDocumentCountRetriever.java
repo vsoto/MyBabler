@@ -97,7 +97,9 @@ public class RefinedDocumentCountRetriever {
                 entries.add(new SimpleEntry<>(word, score));
                 num_ngrams++;
             }
-
+            bufferedReader.close();
+            fileReader.close();
+         
         } catch (IOException e) {
             log.error(e);
         }
