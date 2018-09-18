@@ -156,7 +156,7 @@ public class BBNSearchProducer extends BabelProducer {
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);
-            System.exit(1);
+            // System.exit(1);
         }
     }
 
